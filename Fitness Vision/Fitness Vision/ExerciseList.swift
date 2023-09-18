@@ -11,12 +11,17 @@ import SwiftUI
 struct ExercisesPage: View {
     var body: some View {
         NavigationView {
-            VStack{
-                Text("Exercises")
-                    .font(.largeTitle)
-                    .multilineTextAlignment(.center)
-                    .padding()
-                Spacer()
+            ZStack{
+                LinearGradient(gradient: Gradient(colors: [.blue, .white]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                    .edgesIgnoringSafeArea(.all)
+                VStack{
+                    Text("**Exercises**")
+                        .foregroundStyle(.white)
+                        .font(.largeTitle)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                    Spacer()
+                }
             }
         }
     }
