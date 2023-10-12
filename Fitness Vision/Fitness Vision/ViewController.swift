@@ -1,7 +1,17 @@
-import UIKit
+//
+//  ViewController.swift
+//  Fitness Vision
+//
+//  Created by Emma Fu on 2023-10-11.
+//
+import Foundation
 import SwiftUI
+import CoreData
 import AVFoundation
+import UIKit
 
+
+/* ----------------------------- Version 1 ----------------------------- */
 
 class ViewController: UIViewController {
     private var permissionGranted = false // Flag for permission
@@ -99,4 +109,91 @@ struct HostedViewController: UIViewControllerRepresentable {
 
         func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
         }
+}
+
+/* ----------------------------- Version 2 ----------------------------- */
+
+// https://github.com/barbulescualex/iOSCustomCamera/blob/master/Starter/CustomCamera/ViewController%2BExtras.swift
+// https://www.youtube.com/watch?v=ZYPNXLABf3c&ab_channel=iOSAcademy
+
+class CameraViewController: UIViewController {
+    // Capture session
+    var session: AVCaptureSession?
+    // Video preview
+    let previewLayer = AVCaptureVideoPreviewLayer()
+    // Photo output
+    let output = AVCapturePhotoOutput()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.layer.addSublayer(previewLayer)
+        checkCameraPermissions()
+        
+        
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        previewLayer.frame = view.bounds
+    }
+    
+    private func checkCameraPermissions(){
+        switch AVCaptureDevice.authorizationStatus(for: .video){
+        // Request permission
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                guard granted else {return}
+            }
+            DispatchQueue.main.async {
+                self.setUpCamera()
+            }
+        case .restricted:
+            break
+        case .denied:
+            break
+            
+        case .authorized:
+            setUpCamera()
+        @unknown default:
+            break
+        }
+        
+    }
+    
+    private func setUpCamera(){
+        let session = AVCaptureSession()
+        if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front){
+            do {
+                let input = try AVCaptureDeviceInput(device: device)
+                if session.canAddInput(input){
+                    session.addInput(input)
+                }
+                
+                // output - not used
+//                if session.canAddOutput(output){
+//                    session.addOutput(output)
+//                }
+                
+                previewLayer.videoGravity = .resizeAspectFill
+                previewLayer.session = session
+                session.startRunning()
+                self.session = session
+                
+            } catch {
+                print(error)
+            }
+        }
+        
+    }
+    
+}
+
+struct HostedCameraViewController: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> UIViewController {
+        return CameraViewController()
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+
+    }
 }
