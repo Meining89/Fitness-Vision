@@ -1,0 +1,29 @@
+
+<Scheme version="1.3" LastUpgradeVersion="1000">
+    <BuildAction buildImplicitDependencies="YES" parallelizeBuildables="YES">
+        <BuildActionEntries>
+            <BuildActionEntry buildForProfiling="YES" buildForArchiving="YES" buildForRunning="YES" buildForTesting="YES" buildForAnalyzing="YES">
+                <BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="78B78EB28085624800000000" BuildableName="HandTrackingGpuApp.app" BlueprintName="HandTrackingGpuApp" ReferencedContainer="container:Mediapipe.xcodeproj"></BuildableReference>
+            </BuildActionEntry>
+        </BuildActionEntries>
+    </BuildAction>
+    <TestAction selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB" shouldUseLaunchSchemeArgsEnv="YES" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" customLLDBInitFile="$(PROJECT_FILE_PATH)/.tulsi/Utils/lldbinit" buildConfiguration="__TulsiTestRunner_Debug">
+        <Testables></Testables>
+        <BuildableProductRunnable runnableDebuggingMode="0">
+            <BuildableReference BuildableName="HandTrackingGpuApp.app" BlueprintName="HandTrackingGpuApp" ReferencedContainer="container:Mediapipe.xcodeproj" BuildableIdentifier="primary" BlueprintIdentifier="78B78EB28085624800000000"></BuildableReference>
+        </BuildableProductRunnable>
+    </TestAction>
+    <LaunchAction ignoresPersistentStateOnLaunch="NO" useCustomWorkingDirectory="NO" debugDocumentVersioning="YES" customLLDBInitFile="$(PROJECT_FILE_PATH)/.tulsi/Utils/lldbinit" launchStyle="0" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" debugServiceExtension="internal" buildConfiguration="Debug" selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB" allowLocationSimulation="YES">
+        <EnvironmentVariables></EnvironmentVariables>
+        <BuildableProductRunnable runnableDebuggingMode="0">
+            <BuildableReference BuildableName="HandTrackingGpuApp.app" ReferencedContainer="container:Mediapipe.xcodeproj" BlueprintIdentifier="78B78EB28085624800000000" BuildableIdentifier="primary" BlueprintName="HandTrackingGpuApp"></BuildableReference>
+        </BuildableProductRunnable>
+    </LaunchAction>
+    <ProfileAction shouldUseLaunchSchemeArgsEnv="YES" useCustomWorkingDirectory="NO" debugDocumentVersioning="YES" buildConfiguration="__TulsiTestRunner_Release">
+        <BuildableProductRunnable runnableDebuggingMode="0">
+            <BuildableReference BlueprintName="HandTrackingGpuApp" BlueprintIdentifier="78B78EB28085624800000000" BuildableName="HandTrackingGpuApp.app" ReferencedContainer="container:Mediapipe.xcodeproj" BuildableIdentifier="primary"></BuildableReference>
+        </BuildableProductRunnable>
+    </ProfileAction>
+    <AnalyzeAction buildConfiguration="Debug"></AnalyzeAction>
+    <ArchiveAction buildConfiguration="Release" revealArchiveInOrganizer="YES"></ArchiveAction>
+</Scheme>
