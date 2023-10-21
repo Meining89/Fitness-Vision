@@ -1,0 +1,29 @@
+
+<Scheme version="1.3" LastUpgradeVersion="1000">
+    <BuildAction buildImplicitDependencies="YES" parallelizeBuildables="YES">
+        <BuildActionEntries>
+            <BuildActionEntry buildForRunning="YES" buildForProfiling="YES" buildForArchiving="YES" buildForTesting="YES" buildForAnalyzing="YES">
+                <BuildableReference BlueprintName="FaceDetectionCpuApp" ReferencedContainer="container:Mediapipe.xcodeproj" BuildableName="FaceDetectionCpuApp.app" BuildableIdentifier="primary" BlueprintIdentifier="7D40F7D7A03CE6C800000000"></BuildableReference>
+            </BuildActionEntry>
+        </BuildActionEntries>
+    </BuildAction>
+    <TestAction selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB" shouldUseLaunchSchemeArgsEnv="YES" customLLDBInitFile="$(PROJECT_FILE_PATH)/.tulsi/Utils/lldbinit" buildConfiguration="__TulsiTestRunner_Debug">
+        <Testables></Testables>
+        <BuildableProductRunnable runnableDebuggingMode="0">
+            <BuildableReference BlueprintName="FaceDetectionCpuApp" BuildableIdentifier="primary" BlueprintIdentifier="7D40F7D7A03CE6C800000000" ReferencedContainer="container:Mediapipe.xcodeproj" BuildableName="FaceDetectionCpuApp.app"></BuildableReference>
+        </BuildableProductRunnable>
+    </TestAction>
+    <LaunchAction allowLocationSimulation="YES" buildConfiguration="Debug" useCustomWorkingDirectory="NO" debugServiceExtension="internal" customLLDBInitFile="$(PROJECT_FILE_PATH)/.tulsi/Utils/lldbinit" selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" ignoresPersistentStateOnLaunch="NO" debugDocumentVersioning="YES" launchStyle="0">
+        <EnvironmentVariables></EnvironmentVariables>
+        <BuildableProductRunnable runnableDebuggingMode="0">
+            <BuildableReference BlueprintIdentifier="7D40F7D7A03CE6C800000000" BuildableName="FaceDetectionCpuApp.app" BlueprintName="FaceDetectionCpuApp" ReferencedContainer="container:Mediapipe.xcodeproj" BuildableIdentifier="primary"></BuildableReference>
+        </BuildableProductRunnable>
+    </LaunchAction>
+    <ProfileAction debugDocumentVersioning="YES" buildConfiguration="__TulsiTestRunner_Release" shouldUseLaunchSchemeArgsEnv="YES" useCustomWorkingDirectory="NO">
+        <BuildableProductRunnable runnableDebuggingMode="0">
+            <BuildableReference BlueprintName="FaceDetectionCpuApp" BuildableName="FaceDetectionCpuApp.app" BlueprintIdentifier="7D40F7D7A03CE6C800000000" BuildableIdentifier="primary" ReferencedContainer="container:Mediapipe.xcodeproj"></BuildableReference>
+        </BuildableProductRunnable>
+    </ProfileAction>
+    <AnalyzeAction buildConfiguration="Debug"></AnalyzeAction>
+    <ArchiveAction buildConfiguration="Release" revealArchiveInOrganizer="YES"></ArchiveAction>
+</Scheme>

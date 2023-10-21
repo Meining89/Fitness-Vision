@@ -1,0 +1,29 @@
+
+<Scheme version="1.3" LastUpgradeVersion="1000">
+    <BuildAction buildImplicitDependencies="YES" parallelizeBuildables="YES">
+        <BuildActionEntries>
+            <BuildActionEntry buildForRunning="YES" buildForTesting="YES" buildForProfiling="YES" buildForArchiving="YES" buildForAnalyzing="YES">
+                <BuildableReference ReferencedContainer="container:Mediapipe.xcodeproj" BlueprintName="IrisTrackingGpuApp" BuildableIdentifier="primary" BlueprintIdentifier="7D40F7D7C9CA824800000000" BuildableName="IrisTrackingGpuApp.app"></BuildableReference>
+            </BuildActionEntry>
+        </BuildActionEntries>
+    </BuildAction>
+    <TestAction shouldUseLaunchSchemeArgsEnv="YES" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" customLLDBInitFile="$(PROJECT_FILE_PATH)/.tulsi/Utils/lldbinit" selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB" buildConfiguration="__TulsiTestRunner_Debug">
+        <Testables></Testables>
+        <BuildableProductRunnable runnableDebuggingMode="0">
+            <BuildableReference BlueprintIdentifier="7D40F7D7C9CA824800000000" BlueprintName="IrisTrackingGpuApp" ReferencedContainer="container:Mediapipe.xcodeproj" BuildableName="IrisTrackingGpuApp.app" BuildableIdentifier="primary"></BuildableReference>
+        </BuildableProductRunnable>
+    </TestAction>
+    <LaunchAction ignoresPersistentStateOnLaunch="NO" selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB" debugDocumentVersioning="YES" debugServiceExtension="internal" buildConfiguration="Debug" customLLDBInitFile="$(PROJECT_FILE_PATH)/.tulsi/Utils/lldbinit" allowLocationSimulation="YES" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" useCustomWorkingDirectory="NO" launchStyle="0">
+        <EnvironmentVariables></EnvironmentVariables>
+        <BuildableProductRunnable runnableDebuggingMode="0">
+            <BuildableReference ReferencedContainer="container:Mediapipe.xcodeproj" BlueprintName="IrisTrackingGpuApp" BlueprintIdentifier="7D40F7D7C9CA824800000000" BuildableName="IrisTrackingGpuApp.app" BuildableIdentifier="primary"></BuildableReference>
+        </BuildableProductRunnable>
+    </LaunchAction>
+    <ProfileAction buildConfiguration="__TulsiTestRunner_Release" shouldUseLaunchSchemeArgsEnv="YES" useCustomWorkingDirectory="NO" debugDocumentVersioning="YES">
+        <BuildableProductRunnable runnableDebuggingMode="0">
+            <BuildableReference ReferencedContainer="container:Mediapipe.xcodeproj" BuildableName="IrisTrackingGpuApp.app" BlueprintIdentifier="7D40F7D7C9CA824800000000" BuildableIdentifier="primary" BlueprintName="IrisTrackingGpuApp"></BuildableReference>
+        </BuildableProductRunnable>
+    </ProfileAction>
+    <AnalyzeAction buildConfiguration="Debug"></AnalyzeAction>
+    <ArchiveAction revealArchiveInOrganizer="YES" buildConfiguration="Release"></ArchiveAction>
+</Scheme>
