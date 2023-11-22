@@ -67,24 +67,7 @@ def main():
             average_right_shoulder_y = sum(pos[1] for pos in shoulder_positions) / len(shoulder_positions)
 
             ###################### Calculate knee angles ######################
-
-            left_hip = (results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_HIP].x,
-                        results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_HIP].y)
-            left_knee = (results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_KNEE].x,
-                         results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_KNEE].y)
-            left_ankle = (results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ANKLE].x,
-                          results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ANKLE].y)
-
-            right_hip = (results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_HIP].x,
-                         results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_HIP].y)
-            right_knee = (results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_KNEE].x,
-                          results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_KNEE].y)
-            right_ankle = (results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ANKLE].x,
-                           results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ANKLE].y)
-
-            # Calculate knee angles
-            left_knee_angle = calculate_angle_3d(left_hip, left_knee, left_ankle)
-            right_knee_angle = calculate_angle_3d(right_hip, right_knee, right_ankle)
+            left_knee_angle, right_knee_angle = calculate_knee_angles(results, mp_pose)
 
             left_knee_angles.append(left_knee_angle)
             right_knee_angles.append(right_knee_angle)
@@ -93,16 +76,13 @@ def main():
             average_left_knee_angle = sum(left_knee_angles) / len(left_knee_angles)
             average_right_knee_angle = sum(right_knee_angles) / len(right_knee_angles)
 
-            left_knee_pixel_x = int(left_knee[0] * frame_width)
-            left_knee_pixel_y = int(left_knee[1] * frame_height)
-            knee_loc = (left_knee_pixel_x, left_knee_pixel_y)
+            left_knee_pixel_x = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_KNEE].x * frame_width)
+            left_knee_pixel_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_KNEE].y * frame_height)
+            knee_loc = (left_knee_pixel_x + 10, left_knee_pixel_y)
             knee_angle = min(average_left_knee_angle, average_right_knee_angle)
 
             # Draw the left leg in red if the knee angle is greater than the threshold
-            if knee_angle > KNEE_ANGLE_DEPTH:
-                draw_leg_landmarks(mp, frame, results)
-            else:
-                draw_leg_landmarks(mp, frame, results, color=(0, 255, 0))
+            draw_leg_landmarks(mp, frame, results, color=(0, 255, 0) if knee_angle < KNEE_ANGLE_DEPTH else (0, 0, 255))
 
             # Compare with previous Y positions to determine movement direction
             if left_shoulder_y < average_left_shoulder_y and right_shoulder_y < average_right_shoulder_y:

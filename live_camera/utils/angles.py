@@ -66,3 +66,25 @@ def calculate_angle_3d(a, b, c):
     angle_degrees = np.degrees(angle_radians)
 
     return angle_degrees
+
+
+def calculate_knee_angles(results, mp_pose):
+    left_hip = (results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_HIP].x,
+                results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_HIP].y)
+    left_knee = (results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_KNEE].x,
+                 results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_KNEE].y)
+    left_ankle = (results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ANKLE].x,
+                  results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ANKLE].y)
+
+    right_hip = (results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_HIP].x,
+                 results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_HIP].y)
+    right_knee = (results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_KNEE].x,
+                  results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_KNEE].y)
+    right_ankle = (results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ANKLE].x,
+                   results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ANKLE].y)
+
+    # Calculate knee angles
+    left_knee_angle = calculate_angle_3d(left_hip, left_knee, left_ankle)
+    right_knee_angle = calculate_angle_3d(right_hip, right_knee, right_ankle)
+
+    return left_knee_angle, right_knee_angle
