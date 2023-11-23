@@ -24,7 +24,6 @@ def main():
     # Initalize counter
     count = 0
     going_up = False
-    go_lower_message_display_time = 0
 
     # Initialize video capture
     cap = cv2.VideoCapture(0)  # 0 corresponds to the default camera (change it if you have multiple cameras)
@@ -92,12 +91,15 @@ def main():
                 if not going_up:
                     count += 1
                     going_up = True
-                    if knee_angle > KNEE_ANGLE_DEPTH:
-                        go_lower_message_display_time = time.time()  # Update the display time
 
             elif left_shoulder_y > average_left_shoulder_y + MOVEMENT_THR and right_shoulder_y > average_right_shoulder_y + MOVEMENT_THR:
                 direction_text = "DOWN"
                 going_up = False
+
+                if knee_angle > KNEE_ANGLE_DEPTH:
+                    text_to_display = "Go lower!"
+                    draw_text(frame, (knee_loc[0], knee_loc[1] + knee_text_height + 20), text_to_display, font_scale=2,
+                              color=(0, 0, 255))
             else:
                 direction_text = "STABLE"
 
@@ -115,12 +117,6 @@ def main():
             knee_angle_text = f"{knee_angle:.2f} degrees"
             draw_text(frame, knee_loc, knee_angle_text)
             _, knee_text_height = cv2.getTextSize(knee_angle_text, cv2.FONT_HERSHEY_SIMPLEX, 2, thickness=2)[0]
-
-            # Check the time difference and display the message only if less than 2 seconds
-            if time.time() - go_lower_message_display_time < ERROR_DISPLAY_TIME:
-                text_to_display = "Go lower!"
-                draw_text(frame, (knee_loc[0], knee_loc[1] + knee_text_height + 20), text_to_display, font_scale=2,
-                          color=(0, 0, 255))
 
             # Update previous Y positions
             prev_left_shoulder_y = left_shoulder_y
