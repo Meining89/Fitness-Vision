@@ -24,6 +24,7 @@ def main():
     # Initalize counter
     count = 0
     going_up = False
+    go_lower_message_display_time = 0
 
     # Initialize video capture
     cap = cv2.VideoCapture(0)  # 0 corresponds to the default camera (change it if you have multiple cameras)
@@ -79,20 +80,22 @@ def main():
             left_knee_pixel_x = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_KNEE].x * frame_width)
             left_knee_pixel_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_KNEE].y * frame_height)
             knee_loc = (left_knee_pixel_x + 10, left_knee_pixel_y)
-            knee_angle = min(average_left_knee_angle, average_right_knee_angle)
+            knee_angle = min(left_knee_angle, right_knee_angle)
 
             # Draw the left leg in red if the knee angle is greater than the threshold
             draw_leg_landmarks(mp, frame, results, color=(0, 255, 0) if knee_angle < KNEE_ANGLE_DEPTH else (0, 0, 255))
 
             # Compare with previous Y positions to determine movement direction
-            if left_shoulder_y < average_left_shoulder_y and right_shoulder_y < average_right_shoulder_y:
+            if left_shoulder_y < average_left_shoulder_y - MOVEMENT_THR and right_shoulder_y < average_right_shoulder_y - MOVEMENT_THR:
                 direction_text = "UP"
                 # Change in direction: going up now
                 if not going_up:
                     count += 1
                     going_up = True
+                    if knee_angle > KNEE_ANGLE_DEPTH:
+                        go_lower_message_display_time = time.time()  # Update the display time
 
-            elif left_shoulder_y > average_left_shoulder_y and right_shoulder_y > average_right_shoulder_y:
+            elif left_shoulder_y > average_left_shoulder_y + MOVEMENT_THR and right_shoulder_y > average_right_shoulder_y + MOVEMENT_THR:
                 direction_text = "DOWN"
                 going_up = False
             else:
@@ -104,13 +107,20 @@ def main():
             text_to_display = f"{direction_text} | Cycles: {count}"
             draw_text(frame, (cycle_x, cycle_y), text_to_display)
 
-            knee_x = 50
-            knee_y = 200
+            knee_info_x = 50
+            knee_info_y = 200
             knee_text = f"Left Knee: {average_left_knee_angle:.2f} degrees | Right Knee: {average_right_knee_angle:.2f} degrees"
-            draw_text(frame, (knee_x, knee_y), knee_text)
+            draw_text(frame, (knee_info_x, knee_info_y), knee_text)
 
             knee_angle_text = f"{knee_angle:.2f} degrees"
             draw_text(frame, knee_loc, knee_angle_text)
+            _, knee_text_height = cv2.getTextSize(knee_angle_text, cv2.FONT_HERSHEY_SIMPLEX, 2, thickness=2)[0]
+
+            # Check the time difference and display the message only if less than 2 seconds
+            if time.time() - go_lower_message_display_time < ERROR_DISPLAY_TIME:
+                text_to_display = "Go lower!"
+                draw_text(frame, (knee_loc[0], knee_loc[1] + knee_text_height + 20), text_to_display, font_scale=2,
+                          color=(0, 0, 255))
 
             # Update previous Y positions
             prev_left_shoulder_y = left_shoulder_y
