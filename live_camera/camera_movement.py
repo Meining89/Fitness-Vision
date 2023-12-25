@@ -7,7 +7,7 @@ import mediapipe as mp
 import math
 from utils.angles import *
 from utils.draw_display import *
-from utils.constant import *
+from utils.squat import *
 from collections import deque
 
 
@@ -85,14 +85,14 @@ def main():
             draw_leg_landmarks(mp, frame, results, color=(0, 255, 0) if knee_angle < KNEE_ANGLE_DEPTH else (0, 0, 255))
 
             # Compare with previous Y positions to determine movement direction
-            if left_shoulder_y < average_left_shoulder_y - MOVEMENT_THR and right_shoulder_y < average_right_shoulder_y - MOVEMENT_THR:
+            if is_shoulder_upwards(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y):
                 direction_text = "UP"
                 # Change in direction: going up now
                 if not going_up:
                     count += 1
                     going_up = True
 
-            elif left_shoulder_y > average_left_shoulder_y + MOVEMENT_THR and right_shoulder_y > average_right_shoulder_y + MOVEMENT_THR:
+            elif is_shoulder_downwards(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y):
                 direction_text = "DOWN"
                 going_up = False
 
@@ -112,6 +112,8 @@ def main():
             knee_info_x = 50
             knee_info_y = 200
             knee_text = f"Left Knee: {average_left_knee_angle:.2f} degrees | Right Knee: {average_right_knee_angle:.2f} degrees"
+            # show per frame values
+            # knee_text = f"Left Knee: {left_knee_angle:.2f} degrees | Right Knee: {right_knee_angle:.2f} degrees"
             draw_text(frame, (knee_info_x, knee_info_y), knee_text)
 
             knee_angle_text = f"{knee_angle:.2f} degrees"
