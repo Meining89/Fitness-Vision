@@ -17,7 +17,7 @@ def main():
     pose = mp_pose.Pose()
 
     # Initialize shoulder Y positions
-    shoulder_positions = deque(maxlen=NUM_FRAMES_FOR_AVERAGE)
+    shoulder_positions = deque(maxlen=NUM_FRAMES_SHOULDER)
     left_knee_angles = deque(maxlen=NUM_FRAMES_KNEE)
     right_knee_angles = deque(maxlen=NUM_FRAMES_KNEE)
 
@@ -85,14 +85,16 @@ def main():
             draw_leg_landmarks(mp, frame, results, color=(0, 255, 0) if knee_angle < KNEE_ANGLE_DEPTH else (0, 0, 255))
 
             # Compare with previous Y positions to determine movement direction
-            if is_shoulder_upwards(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y):
+            if is_standing_up(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y,
+                              left_knee_angle, right_knee_angle, average_left_knee_angle, average_right_knee_angle):
                 direction_text = "UP"
                 # Change in direction: going up now
                 if not going_up:
                     count += 1
                     going_up = True
 
-            elif is_shoulder_downwards(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y):
+            elif is_squatting_down(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y,
+                                   left_knee_angle, right_knee_angle, average_left_knee_angle, average_right_knee_angle):
                 direction_text = "DOWN"
                 going_up = False
 
