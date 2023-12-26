@@ -1,13 +1,7 @@
-import cv2
-import numpy as np
-import os
-from matplotlib import pyplot as plt
-import time
 import mediapipe as mp
-import math
 from utils.angles import *
 from utils.draw_display import *
-from utils.squat import *
+from exercise.squat import *
 from collections import deque
 
 
