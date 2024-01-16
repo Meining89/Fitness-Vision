@@ -3,6 +3,7 @@ import cv2
 import tkinter as tk
 from tkinter import messagebox
 from PIL import ImageTk, Image
+import customtkinter
 
 def open_camera():
     global cap
@@ -34,6 +35,8 @@ screen_width = root_window.winfo_screenwidth()
 screen_height = root_window.winfo_screenheight()
 # Set the window size to fill up the screen
 root_window.geometry(f'{screen_width}x{screen_height}')
+root_window.grid_rowconfigure(0, weight=1)
+root_window.grid_columnconfigure(0, weight=1)
 
 # Graphics window
 imageFrame = tk.Frame(root_window, width=int(screen_width * 0.5), height=screen_height)  # Adjusted width
@@ -47,15 +50,17 @@ cap = None  # Will store the capture object
 
 
 # welcome message
-text=tk.Label(root_window,text="Welcome to Fitness Vision",bg="blue",fg="white",font=('Times', 20, 'bold italic'))
+text=tk.Label(root_window,text="Welcome to Fitness Vision",fg="black",font=('Roboto', 30, 'bold '))
 text.grid(row=0, column=0, pady=10, sticky='n')  # Align to the top
-description = tk.Label(root_window,text="Your Real-time squate counter & evaluation assistant",bg="blue",fg="white",font=('Times', 20, 'bold italic'))
-description.grid(row=1, column=0, pady=10, sticky='n')
+description = tk.Label(root_window,text="Your Real-time squat counter & evaluation assistant",fg="black",font=('Roboto', 20, 'bold '))
+description.grid(row=0, column=0, pady=80, sticky='n')
 
 # add button: open camera/opencv
-button=tk.Button(root_window,text="Start",command=open_camera)
+# button=tk.Button(root_window,text="Start",command=open_camera)
+# use custom tkinter instead
+button=customtkinter.CTkButton(root_window,text="Start",command=open_camera)
 
-button.grid(row=4, column=0, pady=10, sticky='n')  
+button.grid(row=0, column=0, pady=150, sticky='n')  
 
 
 
