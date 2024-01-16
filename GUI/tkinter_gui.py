@@ -8,9 +8,15 @@ import customtkinter
 def open_camera():
     global cap
     cap = cv2.VideoCapture(0)  # Open the default camera (camera index 0)
+
+    # Set the camera resolution (adjust these values as needed)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1500)
+
     text.grid_remove()  # Hide the welcome label
     description.grid_remove()  # Hide the description label
     button.grid_remove()  # Hide the button
+    imageFrame.config(height=root_window.winfo_screenheight())  # Adjust height dynamically
     show_frame()  # Start displaying frames
 
 def show_frame():
@@ -20,8 +26,12 @@ def show_frame():
         cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
         img = Image.fromarray(cv2image)
         imgtk = ImageTk.PhotoImage(image=img)
+
+        # Update lmain with the new image
         lmain.imgtk = imgtk
         lmain.configure(image=imgtk)
+
+        # Schedule the next frame update
         lmain.after(10, show_frame) 
     else:
         print("Camera not open")
@@ -39,13 +49,14 @@ root_window.grid_rowconfigure(0, weight=1)
 root_window.grid_columnconfigure(0, weight=1)
 
 # Graphics window
-imageFrame = tk.Frame(root_window, width=int(screen_width * 0.5), height=screen_height)  # Adjusted width
+imageFrame_width = int(screen_width * 0.75)
+imageFrame = tk.Frame(root_window, width=imageFrame_width, height=screen_height)  # Adjusted width
 imageFrame.grid(row=0, column=0, padx=10, pady=2, sticky='nsew')  # Sticky to fill the available space
 
 
 #Capture video frames
 lmain = tk.Label(imageFrame)
-lmain.grid(row=0, column=0)
+lmain.grid(row=0, column=0, sticky='nsew')
 cap = None  # Will store the capture object
 
 
