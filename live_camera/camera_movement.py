@@ -9,6 +9,7 @@ from tensorflow import keras
 from keras.models import Model, load_model
 from keras.layers import (LSTM, Dense, Dropout, Input, Flatten, 
                                      Bidirectional, Permute, multiply)
+from collections import deque
 
 ## Create and Load the Model
 def attention_block(inputs, time_steps):
@@ -73,12 +74,14 @@ def create_model():
     
     return AttnLSTM
 
+
 class VideoProcessor :
     def __init__(self):
         #Initilize parameters and variables
         self.sequence_length = 30
         self.actions = ['Bad_head', 'Bad_back_round', 'Bad_back_warp', 'Bad_lifted_heels', 'Bad_inward_knee', 'Bad_shallow','Good']
-        self.sequence = []
+        self.sequence = deque(maxlen=self.sequence_length)
+        #self.sequence = []
         self.counter = 0
         self.colors = [
             (245, 117, 16),  # Orange
@@ -116,29 +119,18 @@ class VideoProcessor :
         Returns:
             numpy array: processed image with keypoint detection and classification
         """
-               
+
         # Prediction logic
-        keypoints = extract_keypoints(results)        
-        self.sequence.append(keypoints.astype('float32',casting='same_kind'))      
-        self.sequence = self.sequence[-self.sequence_length:]
-        
+        keypoints = extract_keypoints(results)
+        self.sequence.append(keypoints.astype('float32', casting='same_kind'))
+
         if len(self.sequence) == self.sequence_length:
-            res = model.predict(np.expand_dims(self.sequence, axis=0), verbose=0)[0]
-            # interpreter.set_tensor(self.input_details[0]['index'], np.expand_dims(self.sequence, axis=0))
-            # interpreter.invoke()
-            # res = interpreter.get_tensor(self.output_details[0]['index'])
-            
+            res = model.predict(np.expand_dims(list(self.sequence), axis=0), verbose=0)[0]
             self.current_action = self.actions[np.argmax(res)]
-            confidence = np.max(res)
-            
-            # # Erase current action variable if no probability is above threshold
-            # if confidence < self.threshold:
-            #     self.current_action = ''
 
             # Viz probabilities
             image = self.prob_viz(res, image)
-          
-        # return cv2.flip(image, 1)
+
         return image
 
 
@@ -163,6 +155,9 @@ def main():
 
     # Initialize video capture
     cap = cv2.VideoCapture(0)  # 0 corresponds to the default camera (change it if you have multiple cameras)
+
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    print ("FPS value",fps)
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -265,11 +260,12 @@ def main():
             # Update previous Y positions
             prev_left_shoulder_y = left_shoulder_y
             prev_right_shoulder_y = right_shoulder_y
+            
             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-            cv2.imshow('Pose Estimation', img)
+            cv2.imshow('Classification', img)
 
-        # # Display the resulting frame
-        # cv2.imshow('Pose Estimation', frame)
+            # # Display the resulting frame
+            # cv2.imshow('Pose Estimation', frame)
 
         # Break the loop if 'q' key is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
