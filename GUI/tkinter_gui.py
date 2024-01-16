@@ -1,4 +1,3 @@
-
 import numpy as np
 import cv2
 import tkinter as tk
@@ -27,9 +26,8 @@ def show_frame():
         print("Camera not open")
 
 
-# 调用Tk()创建主窗口
+#first window
 root_window =tk.Tk()
-# 给主窗口起一个名字，也就是窗口的名字
 root_window.title('Fitness Vision')
 # Get the screen width and height
 screen_width = root_window.winfo_screenwidth()
@@ -38,7 +36,7 @@ screen_height = root_window.winfo_screenheight()
 root_window.geometry(f'{screen_width}x{screen_height}')
 
 # Graphics window
-imageFrame = tk.Frame(root_window, width=int(screen_width * 0.75), height=screen_height)  # Adjusted width
+imageFrame = tk.Frame(root_window, width=int(screen_width * 0.5), height=screen_height)  # Adjusted width
 imageFrame.grid(row=0, column=0, padx=10, pady=2, sticky='nsew')  # Sticky to fill the available space
 
 
@@ -48,7 +46,7 @@ lmain.grid(row=0, column=0)
 cap = None  # Will store the capture object
 
 
-# # 添加文本内,设置字体的前景色和背景色，和字体类型、大小
+# welcome message
 text=tk.Label(root_window,text="Welcome to Fitness Vision",bg="blue",fg="white",font=('Times', 20, 'bold italic'))
 text.grid(row=0, column=0, pady=10, sticky='n')  # Align to the top
 description = tk.Label(root_window,text="Your Real-time squate counter & evaluation assistant",bg="blue",fg="white",font=('Times', 20, 'bold italic'))
@@ -61,29 +59,14 @@ button.grid(row=4, column=0, pady=10, sticky='n')
 
 
 
-# 更改左上角窗口的的icon图标,加载C语言中文网logo标
-#root_window.iconbitmap('C:/Users/Administrator/Desktop/favicon.ico')
-
-# # 设置主窗口的背景颜色,颜色值可以是英文单词，或者颜色值的16进制数,除此之外还可以使用Tk内置的颜色常量
-# root_window["background"] = "#C9C9C9"
-
-# 定义回调函数，当用户点击窗口x退出时，执行用户自定义的函数
 def QueryWindow():
-    # 显示一个警告信息，点击确后，销毁窗口
     if messagebox.showwarning("Warning","Data will not be saved"):
         if cap is not None:
             cap.release()  # Release the camera capture
-        # 这里必须使用 destory()关闭窗口
+       
         root_window.destroy()
 
 
-
-
-
-
-
-# 使用协议机制与窗口交互，并回调用户自定义的函数
 root_window.protocol('WM_DELETE_WINDOW', QueryWindow)
 
-#开启主循环，让窗口处于显示状态
 root_window.mainloop()
