@@ -22,7 +22,7 @@ def extract_keypoints(results):
     return pose
 
 def create_model():
-    folder = '/Users/jaqueline/Capstone/Fitness-Vision/live_camera/LSTM_model_0.0005'
+    folder = '/Users/jaqueline/Capstone/Fitness-Vision/live_camera/models/LSTM_model_0.0005'
 
     AttnLSTM = load_model(folder)
     print(AttnLSTM.summary())
