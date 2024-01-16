@@ -9,20 +9,27 @@ def open_camera():
     global cap
     cap = cv2.VideoCapture(0)  # Open the default camera (camera index 0)
 
-    # Set the camera resolution (adjust these values as needed)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1500)
-
     text.grid_remove()  # Hide the welcome label
     description.grid_remove()  # Hide the description label
     button.grid_remove()  # Hide the button
-    imageFrame.config(height=root_window.winfo_screenheight())  # Adjust height dynamically
+    imageFrame.config(height=root_window.winfo_screenheight(), width=0.75*root_window.winfo_screenwidth())  # Adjust height and width dynamically
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 0.8*root_window.winfo_screenwidth())  # Set the camera frame width
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 0.8*root_window.winfo_screenheight())  # Set the camera frame height
+    
+    # Reconfigure the grid to move imageFrame to the left
+    root_window.grid_columnconfigure(0, weight=0)  # Remove weight from column 0
+    root_window.grid_columnconfigure(1, weight=1)  # Add weight to column 1
+
+    # Reconfigure the grid to move imageFrame to the left
+    imageFrame.grid(row=0, column=0, padx=10, pady=2, sticky='w')  # Stick to the left
+    
     show_frame()  # Start displaying frames
 
 def show_frame():
     if cap is not None:
         _, frame = cap.read()
         frame = cv2.flip(frame, 1)
+        frame = cv2.resize(frame, (int(0.8*root_window.winfo_screenwidth()), int(0.8*root_window.winfo_screenheight())))  # Resize the frame
         cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
         img = Image.fromarray(cv2image)
         imgtk = ImageTk.PhotoImage(image=img)
@@ -32,9 +39,10 @@ def show_frame():
         lmain.configure(image=imgtk)
 
         # Schedule the next frame update
-        lmain.after(10, show_frame) 
+        lmain.after(10, show_frame)
     else:
         print("Camera not open")
+
 
 
 #first window
@@ -49,14 +57,14 @@ root_window.grid_rowconfigure(0, weight=1)
 root_window.grid_columnconfigure(0, weight=1)
 
 # Graphics window
-imageFrame_width = int(screen_width * 0.75)
+imageFrame_width = int(screen_width)
 imageFrame = tk.Frame(root_window, width=imageFrame_width, height=screen_height)  # Adjusted width
-imageFrame.grid(row=0, column=0, padx=10, pady=2, sticky='nsew')  # Sticky to fill the available space
+imageFrame.grid(row=0, column=0, padx=10, pady=2)  # Sticky to fill the available space
 
 
 #Capture video frames
 lmain = tk.Label(imageFrame)
-lmain.grid(row=0, column=0, sticky='nsew')
+lmain.grid(row=0, column=0)
 cap = None  # Will store the capture object
 
 
