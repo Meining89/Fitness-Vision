@@ -3,13 +3,155 @@ from utils.angles import *
 from utils.draw_display import *
 from exercise.squat import *
 from collections import deque
+from utils.mediapipe_helper import * 
+
+from tensorflow import keras
+from keras.models import Model, load_model
+from keras.layers import (LSTM, Dense, Dropout, Input, Flatten, 
+                                     Bidirectional, Permute, multiply)
+
+## Create and Load the Model
+def attention_block(inputs, time_steps):
+    """
+    Attention layer for deep neural network
+
+    """
+    # Swap dimension to prepare for input for dense layer
+    a = Permute((2, 1))(inputs)
+    # Compute attention weights, use softmax to make sure it sums up to 1
+    a = Dense(time_steps, activation='softmax')(a)
+
+    # Attention vector
+    a_probs = Permute((2, 1), name='attention_vec')(a)
+
+    # Luong's multiplicative score
+    # Performs an element-wise multiplication between the input sequence (inputs) and the attention vector (a_probs).
+    # This multiplication emphasizes the elements of the input sequence that have higher attention weights.
+    output_attention_mul = multiply([inputs, a_probs], name='attention_mul')
+
+    return output_attention_mul
+
+def create_model():
+    """
+    create and load LSTM Model with attention mechinism
+
+    """
+
+    HIDDEN_UNITS = 256
+    sequence_length = 30
+    num_landmarks = 33
+    num_values = 4
+    num_input_values = num_landmarks*num_values
+    num_classes = 7
+
+    # Input
+    inputs = Input(shape=(sequence_length, num_input_values))
+
+    # Bi-LSTM
+    lstm_out = Bidirectional(LSTM(HIDDEN_UNITS, return_sequences=True))(inputs)
+
+    # Attention Block
+    attention_mul = attention_block(lstm_out, sequence_length)
+    attention_mul = Flatten()(attention_mul)
+
+    # Fully Connected Layer
+    # Common Practice to double number of hidden units in the fully connected layer compared to the LSTM layer.
+    x = Dense(2*HIDDEN_UNITS, activation='relu')(attention_mul)
+    #Dropput Layer to avoid overfitting. 50% of the units in the fully connected layer are dropped out during training.
+    x = Dropout(0.5)(x)
+
+    # Output Layer
+    x = Dense(num_classes, activation='softmax')(x)
+
+    # Bring it all together
+    # AttnLSTM = Model(inputs=[inputs], outputs=x)
+
+    folder = 'LSTM_model_0.0005'
+
+    AttnLSTM = load_model(folder)
+    print(AttnLSTM.summary())
+    
+    return AttnLSTM
+
+class VideoProcessor :
+    def __init__(self):
+        #Initilize parameters and variables
+        self.sequence_length = 30
+        self.actions = ['Bad_head', 'Bad_back_round', 'Bad_back_warp', 'Bad_lifted_heels', 'Bad_inward_knee', 'Bad_shallow','Good']
+        self.sequence = []
+        self.counter = 0
+        self.colors = [
+            (245, 117, 16),  # Orange
+            (117, 245, 16),  # Lime Green
+            (16, 117, 245),  # Royal Blue
+            (255, 0, 0),     # Red
+            (0, 255, 0),     # Green
+            (0, 0, 255),     # Blue
+            (255, 255, 0)    # Yellow
+        ]
+      #  self.threshold = 
+
+    def prob_viz(self, res, input_frame):
+        """
+        This function displays the model prediction probability distribution over the set of classes
+        as a horizontal bar graph
+        
+        """
+        output_frame = input_frame.copy()
+        for num, prob in enumerate(res):        
+            cv2.rectangle(output_frame, (0,60+num*40), (int(prob*100), 90+num*40), self.colors[num], -1)
+            cv2.putText(output_frame, self.actions[num], (0, 85+num*40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
+            
+        return output_frame
+
+    def inference_process(self, model, image, results):
+        """
+        Function to process and run inference on AttnLSTM with real time video frame input
+
+        Args:
+            model: the AttnLSTM classification model
+            image (numpy array): input image from the webcam
+            results: Processed frame from mediapipe Pose
+
+        Returns:
+            numpy array: processed image with keypoint detection and classification
+        """
+               
+        # Prediction logic
+        keypoints = extract_keypoints(results)        
+        self.sequence.append(keypoints.astype('float32',casting='same_kind'))      
+        self.sequence = self.sequence[-self.sequence_length:]
+        
+        if len(self.sequence) == self.sequence_length:
+            res = model.predict(np.expand_dims(self.sequence, axis=0), verbose=0)[0]
+            # interpreter.set_tensor(self.input_details[0]['index'], np.expand_dims(self.sequence, axis=0))
+            # interpreter.invoke()
+            # res = interpreter.get_tensor(self.output_details[0]['index'])
+            
+            self.current_action = self.actions[np.argmax(res)]
+            confidence = np.max(res)
+            
+            # # Erase current action variable if no probability is above threshold
+            # if confidence < self.threshold:
+            #     self.current_action = ''
+
+            # Viz probabilities
+            image = self.prob_viz(res, image)
+          
+        # return cv2.flip(image, 1)
+        return image
+
 
 
 def main():
+    # Create LSTM model
+    AttnLSTM = create_model()
     # Initialize MediaPipe Pose
     mp_pose = mp.solutions.pose
     pose = mp_pose.Pose()
 
+    # Initialize Video Processor
+    video_processor = VideoProcessor()
     # Initialize shoulder Y positions
     shoulder_positions = deque(maxlen=NUM_FRAMES_SHOULDER)
     left_knee_angles = deque(maxlen=NUM_FRAMES_KNEE)
@@ -37,8 +179,12 @@ def main():
         # Process the frame with MediaPipe Pose
         results = pose.process(rgb_frame)
 
+
         # Draw landmarks on the frame
         if results.pose_landmarks:
+            # Process the frame with AttnLSTM model
+            img = video_processor.inference_process(AttnLSTM, rgb_frame, results)
+
             mp.solutions.drawing_utils.draw_landmarks(frame,
                                                       results.pose_landmarks,
                                                       mp_pose.POSE_CONNECTIONS,
@@ -119,9 +265,11 @@ def main():
             # Update previous Y positions
             prev_left_shoulder_y = left_shoulder_y
             prev_right_shoulder_y = right_shoulder_y
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            cv2.imshow('Pose Estimation', img)
 
-        # Display the resulting frame
-        cv2.imshow('Pose Estimation', frame)
+        # # Display the resulting frame
+        # cv2.imshow('Pose Estimation', frame)
 
         # Break the loop if 'q' key is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):

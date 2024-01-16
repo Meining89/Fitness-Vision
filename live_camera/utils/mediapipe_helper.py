@@ -1,6 +1,7 @@
 import cv2
 # mp_pose = mp.solutions.pose
 # mp_drawing = mp.solutions.drawing_utils
+import numpy as np
 
 
 def mediapipe_detection(image, model):
