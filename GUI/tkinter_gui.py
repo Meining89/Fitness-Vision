@@ -23,6 +23,8 @@ def open_camera():
     # Reconfigure the grid to move imageFrame to the left
     imageFrame.grid(row=0, column=0, padx=10, pady=2, sticky='w')  # Stick to the left
     
+    end_button.grid(row=1, column=0, pady=10, sticky='e')
+
     show_frame()  # Start displaying frames
 
 def show_frame():
@@ -44,6 +46,20 @@ def show_frame():
         print("Camera not open")
 
 
+def show_popup():
+    response = messagebox.askquestion("Confirmation", "Are you sure you want to end?")
+    if response == 'yes':
+        if cap is not None:
+            cap.release()  # Release the camera capture
+
+        # Display a summary messagebox
+        summary_message = f"Summary\nDuration: 5:00\nCount: 3\nMost Common error: Shallow"
+        messagebox.showinfo("Summary", summary_message)
+
+        root_window.destroy()
+    else:
+        # Handle the case where the user chose not to end
+        messagebox.showinfo("Resume", "Resuming camera capture.")
 
 #first window
 root_window =tk.Tk()
@@ -61,12 +77,15 @@ imageFrame_width = int(screen_width)
 imageFrame = tk.Frame(root_window, width=imageFrame_width, height=screen_height)  # Adjusted width
 imageFrame.grid(row=0, column=0, padx=10, pady=2)  # Sticky to fill the available space
 
-
 #Capture video frames
 lmain = tk.Label(imageFrame)
 lmain.grid(row=0, column=0)
 cap = None  # Will store the capture object
 
+#end_button
+end_button = customtkinter.CTkButton(imageFrame,text="End",command=show_popup)
+end_button.grid(row=1, column=0, pady=10, sticky='e')
+end_button.grid_remove()  # Hide the End button initially
 
 # welcome message
 text=tk.Label(root_window,text="Welcome to Fitness Vision",fg="black",font=('Roboto', 30, 'bold '))
