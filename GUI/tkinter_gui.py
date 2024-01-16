@@ -5,29 +5,12 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import ImageTk, Image
 
-
-
-# 调用Tk()创建主窗口
-root_window =tk.Tk()
-# 给主窗口起一个名字，也就是窗口的名字
-root_window.title('Fitness Vision')
-# 设置窗口大小:宽x高,注,此处不能为 "*",必须使用 "x"
-root_window.geometry('1000x700')
-
-#Graphics window
-imageFrame = tk.Frame(root_window, width=600, height=500)
-imageFrame.grid(row=0, column=0, padx=10, pady=2)
-
-#Capture video frames
-lmain = tk.Label(imageFrame)
-lmain.grid(row=0, column=0)
-cap = None  # Will store the capture object
-
 def open_camera():
     global cap
     cap = cv2.VideoCapture(0)  # Open the default camera (camera index 0)
-    text.grid_forget()  # Hide the welcome label
-    description.grid_forget()  # Hide the description label
+    text.grid_remove()  # Hide the welcome label
+    description.grid_remove()  # Hide the description label
+    button.grid_remove()  # Hide the button
     show_frame()  # Start displaying frames
 
 def show_frame():
@@ -44,19 +27,38 @@ def show_frame():
         print("Camera not open")
 
 
+# 调用Tk()创建主窗口
+root_window =tk.Tk()
+# 给主窗口起一个名字，也就是窗口的名字
+root_window.title('Fitness Vision')
+# Get the screen width and height
+screen_width = root_window.winfo_screenwidth()
+screen_height = root_window.winfo_screenheight()
+# Set the window size to fill up the screen
+root_window.geometry(f'{screen_width}x{screen_height}')
 
-#Slider window (slider controls stage position)
-sliderFrame = tk.Frame(root_window, width=600, height=100)
-sliderFrame.grid(row = 1, column=0, padx=10, pady=2)
+# Graphics window
+imageFrame = tk.Frame(root_window, width=int(screen_width * 0.75), height=screen_height)  # Adjusted width
+imageFrame.grid(row=0, column=0, padx=10, pady=2, sticky='nsew')  # Sticky to fill the available space
+
+
+#Capture video frames
+lmain = tk.Label(imageFrame)
+lmain.grid(row=0, column=0)
+cap = None  # Will store the capture object
+
+
+# # 添加文本内,设置字体的前景色和背景色，和字体类型、大小
+text=tk.Label(root_window,text="Welcome to Fitness Vision",bg="blue",fg="white",font=('Times', 20, 'bold italic'))
+text.grid(row=0, column=0, pady=10, sticky='n')  # Align to the top
+description = tk.Label(root_window,text="Your Real-time squate counter & evaluation assistant",bg="blue",fg="white",font=('Times', 20, 'bold italic'))
+description.grid(row=1, column=0, pady=10, sticky='n')
 
 # add button: open camera/opencv
 button=tk.Button(root_window,text="Start",command=open_camera)
 
-# def callback():
+button.grid(row=4, column=0, pady=10, sticky='n')  
 
-# button=tk.Button(root_window,text="Start",command=callback)
-# 将按钮放置在主窗口内
-button.grid(row=2, column=0, pady=10)  # Use grid instead of pack
 
 
 # 更改左上角窗口的的icon图标,加载C语言中文网logo标
@@ -75,12 +77,7 @@ def QueryWindow():
         root_window.destroy()
 
 
-# # 添加文本内,设置字体的前景色和背景色，和字体类型、大小
-text=tk.Label(root_window,text="Welcome to Fitness Vision",bg="blue",fg="white",font=('Times', 20, 'bold italic'))
-# # 将文本内容放置在主窗口内
-text.grid(row=0, column=0, pady=10)
-description = tk.Label(root_window,text="Your Real-time squate counter & evaluation assistant",bg="blue",fg="white",font=('Times', 20, 'bold italic'))
-description.grid(row=1, column=0, pady=10)
+
 
 
 
