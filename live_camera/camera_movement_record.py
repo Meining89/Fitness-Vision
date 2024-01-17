@@ -153,7 +153,7 @@ def main():
     # Initalize counter
     count = 0
     going_up = False
-    start_recording = False
+    squat_start_height = 1000
 
     # Initialize video capture
     cap = cv2.VideoCapture(0)  # 0 corresponds to the default camera (change it if you have multiple cameras)
@@ -243,10 +243,23 @@ def main():
                     going_up = True
 
             elif is_squatting_down(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y,
-                                   left_knee_angle, right_knee_angle, average_left_knee_angle, average_right_knee_angle):
+                                   left_knee_angle, right_knee_angle, average_left_knee_angle,
+                                   average_right_knee_angle):
                 direction_text = "DOWN"
                 going_up = False
 
+                # Calculate squat height
+                squat_start_height = (average_left_shoulder_y + average_right_shoulder_y) / 2
+
+                if knee_angle > KNEE_ANGLE_DEPTH:
+                    text_to_display = "Go lower!"
+                    draw_text(frame, (knee_loc[0], knee_loc[1] + knee_text_height + 20), text_to_display, font_scale=2,
+                              color=(0, 0, 255))
+            else:
+                direction_text = "STABLE"
+
+            current_shoulder_avg = (average_left_shoulder_y + average_right_shoulder_y) / 2
+            if going_up and current_shoulder_avg > squat_start_height * 0.8:
                 if len(video_processor.frame_history) >= 30:
                     # sample 30 frames
                     model_input = feature_extraction_data(mp_pose, video_processor.frame_history)
@@ -264,13 +277,6 @@ def main():
 
                 # clear frame history
                 video_processor.frame_history = []
-
-                if knee_angle > KNEE_ANGLE_DEPTH:
-                    text_to_display = "Go lower!"
-                    draw_text(frame, (knee_loc[0], knee_loc[1] + knee_text_height + 20), text_to_display, font_scale=2,
-                              color=(0, 0, 255))
-            else:
-                direction_text = "STABLE"
 
             # Display the direction text on the frame
             cycle_x = 50

@@ -67,7 +67,7 @@ def create_model():
     # Bring it all together
     # AttnLSTM = Model(inputs=[inputs], outputs=x)
 
-    folder = 'LSTM_model_0.0005'
+    folder = 'models/LSTM_model_0.0005'
 
     AttnLSTM = load_model(folder)
     print(AttnLSTM.summary())
@@ -79,18 +79,19 @@ class VideoProcessor :
     def __init__(self):
         #Initilize parameters and variables
         self.sequence_length = 30
-        self.actions = ['Bad_head', 'Bad_back_round', 'Bad_back_warp', 'Bad_lifted_heels', 'Bad_inward_knee', 'Bad_shallow','Good']
+        self.actions = ['Bad Head', 'Bad Back Round', 'Bad Back Warp', 'Bad Lifted Heels', 'Bad Inward Knee', 'Bad_Shallow','Good']
         self.sequence = deque(maxlen=self.sequence_length)
-        #self.sequence = []
+
+        self.prediction_history = deque(maxlen=5)
         self.counter = 0
         self.colors = [
             (245, 117, 16),  # Orange
             (117, 245, 16),  # Lime Green
             (16, 117, 245),  # Royal Blue
             (255, 0, 0),     # Red
-            (0, 255, 0),     # Green
             (0, 0, 255),     # Blue
-            (255, 255, 0)    # Yellow
+            (255, 255, 0),    # Yellow
+            (0, 255, 0)  # Green
         ]
       #  self.threshold = 
 
@@ -101,8 +102,9 @@ class VideoProcessor :
         
         """
         output_frame = input_frame.copy()
-        for num, prob in enumerate(res):        
-            cv2.rectangle(output_frame, (0,60+num*40), (int(prob*100), 90+num*40), self.colors[num], -1)
+        for num, prob in enumerate(res):
+            # change prob * ___ for longer length
+            cv2.rectangle(output_frame, (0, 60+num*40), (int(prob*300), 90+num*40), self.colors[num], -1)
             cv2.putText(output_frame, self.actions[num], (0, 85+num*40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
             
         return output_frame
@@ -122,14 +124,20 @@ class VideoProcessor :
 
         # Prediction logic
         keypoints = extract_keypoints(results)
+        moving_average = np.zeros(len(self.actions))
         self.sequence.append(keypoints.astype('float32', casting='same_kind'))
 
         if len(self.sequence) == self.sequence_length:
             res = model.predict(np.expand_dims(list(self.sequence), axis=0), verbose=0)[0]
-            self.current_action = self.actions[np.argmax(res)]
+            # self.current_action = self.actions[np.argmax(res)]
+            self.prediction_history.append(res)
+
+            if len(self.prediction_history) == self.prediction_history.maxlen:
+                moving_average = np.mean(self.prediction_history, axis=0)
+                self.current_action = self.actions[np.argmax(moving_average)]
 
             # Viz probabilities
-            image = self.prob_viz(res, image)
+            image = self.prob_viz(moving_average, image)
 
         return image
 
@@ -177,8 +185,6 @@ def main():
 
         # Draw landmarks on the frame
         if results.pose_landmarks:
-            # Process the frame with AttnLSTM model
-            img = video_processor.inference_process(AttnLSTM, rgb_frame, results)
 
             mp.solutions.drawing_utils.draw_landmarks(frame,
                                                       results.pose_landmarks,
@@ -260,9 +266,11 @@ def main():
             # Update previous Y positions
             prev_left_shoulder_y = left_shoulder_y
             prev_right_shoulder_y = right_shoulder_y
-            
-            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-            cv2.imshow('Classification', img)
+
+            # Process the frame with AttnLSTM model
+            frame = video_processor.inference_process(AttnLSTM, frame, results)
+            # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            cv2.imshow('Classification', frame)
 
             # # Display the resulting frame
             # cv2.imshow('Pose Estimation', frame)
