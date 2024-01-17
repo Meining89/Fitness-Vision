@@ -12,7 +12,7 @@ def open_camera():
     text.grid_remove()  # Hide the welcome label
     description.grid_remove()  # Hide the description label
     button.grid_remove()  # Hide the button
-    imageFrame.config(height=root_window.winfo_screenheight(), width=0.75*root_window.winfo_screenwidth())  # Adjust height and width dynamically
+    imageFrame.config(height=root_window.winfo_screenheight(), width=0.8*root_window.winfo_screenwidth())  # Adjust height and width dynamically
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 0.8*root_window.winfo_screenwidth())  # Set the camera frame width
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 0.8*root_window.winfo_screenheight())  # Set the camera frame height
     
@@ -22,29 +22,8 @@ def open_camera():
 
     # Reconfigure the grid to move imageFrame to the left
     imageFrame.grid(row=0, column=0, padx=10, pady=2, sticky='w')  # Stick to the left
-    
-    end_button.grid(row=1, column=0, pady=10, sticky='e')
 
     show_frame()  # Start displaying frames
-
-def show_frame():
-    if cap is not None:
-        _, frame = cap.read()
-        frame = cv2.flip(frame, 1)
-        frame = cv2.resize(frame, (int(0.8*root_window.winfo_screenwidth()), int(0.8*root_window.winfo_screenheight())))  # Resize the frame
-        cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-        img = Image.fromarray(cv2image)
-        imgtk = ImageTk.PhotoImage(image=img)
-
-        # Update lmain with the new image
-        lmain.imgtk = imgtk
-        lmain.configure(image=imgtk)
-
-        # Schedule the next frame update
-        lmain.after(10, show_frame)
-    else:
-        print("Camera not open")
-
 
 def show_popup():
     response = messagebox.askquestion("Confirmation", "Are you sure you want to end?")
@@ -61,6 +40,37 @@ def show_popup():
         # Handle the case where the user chose not to end
         messagebox.showinfo("Resume", "Resuming camera capture.")
 
+def show_frame():
+    if cap is not None:
+        _, frame = cap.read()
+        frame = cv2.flip(frame, 1)
+        frame = cv2.resize(frame, (int(0.8*root_window.winfo_screenwidth()), int(0.8*root_window.winfo_screenheight())))  # Resize the frame
+        cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+        img = Image.fromarray(cv2image)
+        imgtk = ImageTk.PhotoImage(image=img)
+
+        # Update lmain with the new image
+        lmain.imgtk = imgtk
+        lmain.configure(image=imgtk)
+
+        # Schedule the next frame update
+        lmain.after(10, show_frame)
+
+        # Create a label for the text on the right edge
+        instructions = tk.Label(root_window, text="Instructions: \n Place your whole body in-frame and face forwards", font=('Helvetica', 16), wraplength=220)
+        instructions.grid(row=0, column=1, padx=0, pady=30, sticky='n')  # Adjust padding as needed
+
+        counter = tk.Label(root_window, text="Counter: 1", font=('Helvetica', 20))
+        counter.grid(row=0, column=1, padx=0, pady=150, sticky='n')  # Adjust padding as needed
+
+        feedback = tk.Label(root_window, text="Top 3 Errors: \n 1. Squat too shallow \n 2. Squat very shallow \n 3. What are you even doing", font=('Helvetica', 18), wraplength=240)
+        feedback.grid(row=0, column=1, padx=0, pady=240, sticky='n')  # Adjust padding as needed
+
+        end_button = customtkinter.CTkButton(root_window,text="End",command=show_popup)
+        end_button.grid(row=0, column=1, padx=20, pady=20, sticky='se')
+    else:
+        print("Camera not open")
+
 #first window
 root_window =tk.Tk()
 root_window.title('Fitness Vision')
@@ -73,8 +83,8 @@ root_window.grid_rowconfigure(0, weight=1)
 root_window.grid_columnconfigure(0, weight=1)
 
 # Graphics window
-imageFrame_width = int(screen_width)
-imageFrame = tk.Frame(root_window, width=imageFrame_width, height=screen_height)  # Adjusted width
+# imageFrame_width = int(screen_width)
+imageFrame = tk.Frame(root_window, width=screen_width, height=screen_height)  # Adjusted width
 imageFrame.grid(row=0, column=0, padx=10, pady=2)  # Sticky to fill the available space
 
 #Capture video frames
@@ -83,14 +93,14 @@ lmain.grid(row=0, column=0)
 cap = None  # Will store the capture object
 
 #end_button
-end_button = customtkinter.CTkButton(imageFrame,text="End",command=show_popup)
-end_button.grid(row=1, column=0, pady=10, sticky='e')
-end_button.grid_remove()  # Hide the End button initially
+# end_button = customtkinter.CTkButton(imageFrame,text="End",command=show_popup)
+# end_button.grid(row=0, column=1, pady=10, sticky='s')
+# end_button.grid_remove()  # Hide the End button initially
 
 # welcome message
 text=tk.Label(root_window,text="Welcome to Fitness Vision",fg="black",font=('Roboto', 30, 'bold '))
 text.grid(row=0, column=0, pady=10, sticky='n')  # Align to the top
-description = tk.Label(root_window,text="Your Real-time squat counter & evaluation assistant",fg="black",font=('Roboto', 20, 'bold '))
+description = tk.Label(root_window,text="Your real-time squat counter & evaluation assistant",fg="black",font=('Roboto', 20, 'bold '))
 description.grid(row=0, column=0, pady=80, sticky='n')
 
 # add button: open camera/opencv
