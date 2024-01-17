@@ -2,6 +2,7 @@ import cv2
 # mp_pose = mp.solutions.pose
 # mp_drawing = mp.solutions.drawing_utils
 import numpy as np
+import math
 
 
 def mediapipe_detection(image, model):
@@ -19,6 +20,24 @@ def extract_keypoints(results):
                      results.pose_landmarks.landmark]).flatten() if results.pose_landmarks else np.zeros(33 * 4)
     return pose
 
+def feature_extraction_data(mp_pose, frame_list, width=1920, height=1080):
+  with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+    #initialize lists to store frame features and images.
+    keypoint_list = []
+
+    #get estimation of number of frames
+    video_frames_count = len(frame_list)
+
+    SEQUENCE_LENGTH = 30
+
+    frame_indices = [video_frames_count*i // SEQUENCE_LENGTH for i in range(SEQUENCE_LENGTH)]
+
+    for current_frame in frame_indices:
+        keypoints = frame_list[current_frame]
+        #Add the frame and image to the list
+        keypoint_list.append(keypoints)
+
+    return keypoint_list
 
 def draw_landmarks(image, results):
     mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
