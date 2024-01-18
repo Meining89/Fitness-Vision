@@ -102,12 +102,16 @@ class VideoProcessor :
         
         """
         output_frame = input_frame.copy()
+        font_size = 2
         for num, prob in enumerate(res):
             # change prob * ___ for longer length
-            cv2.rectangle(output_frame, (0, 60+num*40), (int(prob*300), 90+num*40), self.colors[num], -1)
-            cv2.putText(output_frame, self.actions[num], (0, 85+num*40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
+            cv2.rectangle(output_frame, (0, 40+num*60), (int(1*550), 90+num*60), (0,0,0), -1) # black background
+
+            cv2.rectangle(output_frame, (0, 40+num*60), (int(prob*550), 90+num*60), self.colors[num], -1)
+            cv2.putText(output_frame, self.actions[num], (0, 85+num*60), cv2.FONT_HERSHEY_SIMPLEX, font_size, (255,255,255), 2, cv2.LINE_AA)
             
         return output_frame
+
 
     def inference_process(self, model, image, results):
         """
