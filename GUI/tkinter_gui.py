@@ -60,10 +60,10 @@ def show_frame():
         instructions = tk.Label(root_window, text="Instructions: \n Place your whole body in-frame and face forwards", font=('Helvetica', 16), wraplength=220)
         instructions.grid(row=0, column=1, padx=0, pady=30, sticky='n')  # Adjust padding as needed
 
-        counter = tk.Label(root_window, text="Counter: 1", font=('Helvetica', 20))
+        counter = tk.Label(root_window, text="Count: 3", font=('Helvetica', 20))
         counter.grid(row=0, column=1, padx=0, pady=150, sticky='n')  # Adjust padding as needed
 
-        feedback = tk.Label(root_window, text="Top 3 Errors: \n 1. Squat too shallow \n 2. Squat very shallow \n 3. What are you even doing", font=('Helvetica', 18), wraplength=240)
+        feedback = tk.Label(root_window, text="Top 3 Errors: \n 1. Shallow \n 2. Round Back \n 3. Inward Knee", font=('Helvetica', 18), wraplength=240)
         feedback.grid(row=0, column=1, padx=0, pady=240, sticky='n')  # Adjust padding as needed
 
         end_button = customtkinter.CTkButton(root_window,text="End",command=show_popup)
