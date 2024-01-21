@@ -105,10 +105,10 @@ class VideoProcessor :
         font_size = 2
         for num, prob in enumerate(res):
             # change prob * ___ for longer length
-            cv2.rectangle(output_frame, (0, 40+num*60), (int(1*550), 90+num*60), (0,0,0), -1) # black background
+            cv2.rectangle(output_frame, (0, 100+num*60), (int(1*550), 150+num*60), (0,0,0), -1) # black background
 
-            cv2.rectangle(output_frame, (0, 40+num*60), (int(prob*550), 90+num*60), self.colors[num], -1)
-            cv2.putText(output_frame, self.actions[num], (0, 85+num*60), cv2.FONT_HERSHEY_SIMPLEX, font_size, (255,255,255), 2, cv2.LINE_AA)
+            cv2.rectangle(output_frame, (0, 100+num*60), (int(prob*550), 150+num*60), self.colors[num], -1)
+            cv2.putText(output_frame, self.actions[num], (0, 145+num*60), cv2.FONT_HERSHEY_SIMPLEX, font_size, (255,255,255), 2, cv2.LINE_AA)
             
         return output_frame
 
@@ -251,17 +251,17 @@ def main():
                 direction_text = "STABLE"
 
             # Display the direction text on the frame
-            cycle_x = 50
-            cycle_y = 100
+            cycle_x = 0
+            cycle_y = 50
             text_to_display = f"{direction_text} | Cycles: {count}"
-            draw_text(frame, (cycle_x, cycle_y), text_to_display)
+            draw_text(frame, (cycle_x, cycle_y), text_to_display, color=(255, 255, 255))
 
-            knee_info_x = 50
-            knee_info_y = 200
-            knee_text = f"Left Knee: {average_left_knee_angle:.2f} degrees | Right Knee: {average_right_knee_angle:.2f} degrees"
-            # show per frame values
-            # knee_text = f"Left Knee: {left_knee_angle:.2f} degrees | Right Knee: {right_knee_angle:.2f} degrees"
-            draw_text(frame, (knee_info_x, knee_info_y), knee_text)
+            # knee_info_x = 50
+            # knee_info_y = 200
+            # knee_text = f"Left Knee: {average_left_knee_angle:.2f} degrees | Right Knee: {average_right_knee_angle:.2f} degrees"
+            # # show per frame values
+            # # knee_text = f"Left Knee: {left_knee_angle:.2f} degrees | Right Knee: {right_knee_angle:.2f} degrees"
+            # draw_text(frame, (knee_info_x, knee_info_y), knee_text)
 
             knee_angle_text = f"{knee_angle:.2f} degrees"
             draw_text(frame, knee_loc, knee_angle_text)
