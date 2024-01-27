@@ -1,15 +1,60 @@
 from utils.constant import *
+from utils.draw_display import *
 
-def is_squatting_down(left_shoulder, right_shoulder, average_left_shoulder, average_right_shoulder, left_knee_angle, right_knee_angle, left_knee_average, right_knee_average):
+
+def process_shallow(frame, counter, knee_obj):
+
+    min_knee_angle = min(knee_obj.left_angle, knee_obj.right_angle)
+
+    frame_height, frame_width, _ = frame.shape
+
+    # display knee_angle at knee_loc
+    left_knee_pixel_x = int(knee_obj.left.x * frame_width)
+    left_knee_pixel_y = int(knee_obj.left.y * frame_height)
+    knee_loc = (left_knee_pixel_x + 10, left_knee_pixel_y)
+    knee_angle = min(knee_obj.left_angle, knee_obj.right_angle)
+    knee_angle_text = f"{knee_angle:.2f} degrees"
+    draw_text(frame, knee_loc, knee_angle_text)
+    _, knee_text_height = cv2.getTextSize(knee_angle_text, cv2.FONT_HERSHEY_SIMPLEX, 2, thickness=2)[0]
+
+    if not counter.going_up and min_knee_angle > KNEE_ANGLE_DEPTH:
+        text_to_display = "Go lower!"
+        draw_text(frame, (knee_loc[0], knee_loc[1] + knee_text_height + 20), text_to_display, font_scale=2,
+                  color=(0, 0, 255))
+        return True
+
+    return False
+
+def is_squatting_down(shoulder_obj, knee_obj, threshold=170):
+
+    left_shoulder = shoulder_obj.left.y
+    right_shoulder = shoulder_obj.right.y
+    average_left_shoulder = shoulder_obj.avg_val_left
+    average_right_shoulder = shoulder_obj.avg_val_right
+
+    left_knee_angle = knee_obj.left_angle
+    right_knee_angle = knee_obj.right_angle
+    left_knee_average = knee_obj.avg_angle_left
+    right_knee_average = knee_obj.avg_angle_right
 
     if is_shoulder_downwards(left_shoulder, right_shoulder, average_left_shoulder, average_right_shoulder) \
-            and knee_bending(left_knee_angle, right_knee_angle, left_knee_average, right_knee_average):
+            and knee_bending(left_knee_angle, right_knee_angle, left_knee_average, right_knee_average, threshold):
         return True
 
     return False
 
 
-def is_standing_up(left_shoulder, right_shoulder, average_left_shoulder, average_right_shoulder, left_knee_angle, right_knee_angle, left_knee_average, right_knee_average):
+def is_standing_up(shoulder_obj, knee_obj):
+
+    left_shoulder = shoulder_obj.left.y
+    right_shoulder = shoulder_obj.right.y
+    average_left_shoulder = shoulder_obj.avg_val_left
+    average_right_shoulder = shoulder_obj.avg_val_right
+
+    left_knee_angle = knee_obj.left_angle
+    right_knee_angle = knee_obj.right_angle
+    left_knee_average = knee_obj.avg_angle_left
+    right_knee_average = knee_obj.avg_angle_right
 
     if is_shoulder_upwards(left_shoulder, right_shoulder, average_left_shoulder, average_right_shoulder) \
             and knee_straightening(left_knee_angle, right_knee_angle, left_knee_average, right_knee_average):
