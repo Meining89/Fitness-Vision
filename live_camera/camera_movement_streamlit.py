@@ -99,7 +99,9 @@ threshold1 = st.slider("Minimum Keypoint Detection Confidence", 0.00, 1.00, 0.50
 threshold2 = st.slider("Minimum Tracking Confidence", 0.00, 1.00, 0.50)
 threshold3 = st.slider("Minimum Activity Classification Confidence", 0.00, 1.00, 0.50)
 
-st.write("## Activate the AI 🤖🏋️‍♂️")
+KNEE_ANGLE_DEPTH = st.slider("Knee Angle for Sufficient Depth", 80, 160, 120)
+
+st.write("## Activate the AI 💪🏋️‍♂️")
 
 class VideoProcessor :
     def __init__(self):
@@ -133,17 +135,19 @@ class VideoProcessor :
         """
         This function displays the model prediction probability distribution over the set of classes
         as a horizontal bar graph
-        
+
         """
         output_frame = input_frame.copy()
-        font_size = 2
+        font_size = 1.5
         for num, prob in enumerate(res):
             # change prob * ___ for longer length
-            cv2.rectangle(output_frame, (0, 100+num*60), (int(1*550), 150+num*60), (0,0,0), -1) # black background
+            cv2.rectangle(output_frame, (0, 70 + num * 50), (int(1 * 550), 130 + num * 50), (0, 0, 0),
+                          -1)  # black background
 
-            cv2.rectangle(output_frame, (0, 100+num*60), (int(prob*550), 150+num*60), self.colors[num], -1)
-            cv2.putText(output_frame, self.actions[num], (0, 145+num*60), cv2.FONT_HERSHEY_SIMPLEX, font_size, (255,255,255), 2, cv2.LINE_AA)
-            
+            cv2.rectangle(output_frame, (0, 70 + num * 50), (int(prob * 550), 130 + num * 50), self.colors[num], -1)
+            cv2.putText(output_frame, self.actions[num], (0,115 + num * 50), cv2.FONT_HERSHEY_SIMPLEX, font_size,
+                        (255, 255, 255), 2, cv2.LINE_AA)
+
         return output_frame
 
 
@@ -278,7 +282,15 @@ class VideoProcessor :
             # Process the frame with AttnLSTM model
             frame = self.inference_process(AttnLSTM, frame, results)
             # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        
+        else:
+            frame = self.prob_viz(np.zeros(len(self.actions)), frame)
+
+        # Display the direction text on the frame
+        cycle_x = 0
+        cycle_y = 50
+        text_to_display = f"{self.direction_text} | Cycles: {self.count}"
+        draw_text(frame, (cycle_x, cycle_y), text_to_display, color=(255, 255, 255))
+
         return frame
             
 

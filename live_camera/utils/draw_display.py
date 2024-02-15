@@ -1,7 +1,7 @@
 import cv2
 
 
-def draw_text(frame, position, text, font=cv2.FONT_HERSHEY_SIMPLEX, font_scale=2, color=(0, 255, 0), thickness=2):
+def draw_text(frame, position, text, font=cv2.FONT_HERSHEY_SIMPLEX, font_scale=1.5, color=(0, 255, 0), thickness=2):
     """
     Draws text on a frame
 
