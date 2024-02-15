@@ -84,6 +84,7 @@ mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
 
 ## App
+st.set_page_config(layout="wide")
 st.write("# AI Personal Fitness Trainer Web App")
 
 st.markdown("❗❗ **Development Note** ❗❗")
@@ -306,7 +307,7 @@ webrtc_ctx = webrtc_streamer(
     key="AI trainer",
     mode=WebRtcMode.SENDRECV,
     rtc_configuration=RTC_CONFIGURATION,
-    media_stream_constraints={"video": True, "audio": False},
+    media_stream_constraints={"video": {"width": 1280, "height": 720}, "audio": False},
     video_processor_factory=VideoProcessor,
     async_processing=True,
 )
