@@ -107,7 +107,7 @@ class VideoProcessor :
     def __init__(self):
         #Initilize parameters and variables
         self.sequence_length = 30
-        self.actions = ['Bad Head', 'Bad Back Round', 'Bad Back Warp', 'Bad Lifted Heels', 'Bad Inward Knee', 'Bad_Shallow','Good']
+        self.actions = ['Bad Head', 'Bad Back Round', 'Bad Back Warp', 'Bad Lifted Heels', 'Bad Inward Knee', 'Bad Shallow','Good']
         self.sequence = deque(maxlen=self.sequence_length)
 
         self.prediction_history = deque(maxlen=5)
@@ -141,10 +141,10 @@ class VideoProcessor :
         font_size = 1.5
         for num, prob in enumerate(res):
             # change prob * ___ for longer length
-            cv2.rectangle(output_frame, (0, 70 + num * 50), (int(1 * 550), 130 + num * 50), (0, 0, 0),
+            cv2.rectangle(output_frame, (0, 70 + num * 50), (int(1 * 450), 130 + num * 50), (0, 0, 0),
                           -1)  # black background
 
-            cv2.rectangle(output_frame, (0, 70 + num * 50), (int(prob * 550), 130 + num * 50), self.colors[num], -1)
+            cv2.rectangle(output_frame, (0, 70 + num * 50), (int(prob * 450), 130 + num * 50), self.colors[num], -1)
             cv2.putText(output_frame, self.actions[num], (0,115 + num * 50), cv2.FONT_HERSHEY_SIMPLEX, font_size,
                         (255, 255, 255), 2, cv2.LINE_AA)
 
