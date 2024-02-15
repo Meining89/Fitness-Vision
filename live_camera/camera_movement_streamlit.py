@@ -77,6 +77,11 @@ def create_model():
     return AttnLSTM
 
 ## Stream Webcam Video and Run Model
+# Create LSTM model
+AttnLSTM = create_model()
+# Initialize MediaPipe Pose
+mp_pose = mp.solutions.pose
+pose = mp_pose.Pose()
 
 ## App
 st.write("# AI Personal Fitness Trainer Web App")
@@ -103,7 +108,6 @@ class VideoProcessor :
         self.sequence = deque(maxlen=self.sequence_length)
 
         self.prediction_history = deque(maxlen=5)
-        self.counter = 0
         self.colors = [
             (245, 117, 16),  # Orange
             (117, 245, 16),  # Lime Green
@@ -113,7 +117,16 @@ class VideoProcessor :
             (255, 255, 0),    # Yellow
             (0, 255, 0)  # Green
         ]
-      #  self.threshold = 
+        # Initialize shoulder Y positions
+        self.shoulder_positions = deque(maxlen=NUM_FRAMES_SHOULDER)
+        self.left_knee_angles = deque(maxlen=NUM_FRAMES_KNEE)
+        self.right_knee_angles = deque(maxlen=NUM_FRAMES_KNEE)
+
+        # Initalize counter
+        self.count = 0
+        self.going_up = False
+
+        self.direction_text = "STABLE"
 
     def prob_viz(self, res, input_frame):
         """
@@ -166,24 +179,9 @@ class VideoProcessor :
 
         return image
     
-    def process(self,frame):
-        # Create LSTM model
-        AttnLSTM = create_model()
-        # Initialize MediaPipe Pose
-        mp_pose = mp.solutions.pose
-        pose = mp_pose.Pose()
+    def process(self, frame):
+        knee_text_height = 10
 
-
-        # Initialize shoulder Y positions
-        shoulder_positions = deque(maxlen=NUM_FRAMES_SHOULDER)
-        left_knee_angles = deque(maxlen=NUM_FRAMES_KNEE)
-        right_knee_angles = deque(maxlen=NUM_FRAMES_KNEE)
-
-        # Initalize counter
-        count = 0
-        going_up = False
-
-        
         frame_height, frame_width, _ = frame.shape
 
         # Convert the BGR image to RGB
@@ -191,7 +189,6 @@ class VideoProcessor :
 
         # Process the frame with MediaPipe Pose
         results = pose.process(rgb_frame)
-
 
         # Draw landmarks on the frame
         if results.pose_landmarks:
@@ -212,20 +209,20 @@ class VideoProcessor :
             right_shoulder_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER].y
 
             # Update deque with shoulder positions
-            shoulder_positions.append((left_shoulder_y, right_shoulder_y))
+            self.shoulder_positions.append((left_shoulder_y, right_shoulder_y))
 
-            average_left_shoulder_y = sum(pos[0] for pos in shoulder_positions) / len(shoulder_positions)
-            average_right_shoulder_y = sum(pos[1] for pos in shoulder_positions) / len(shoulder_positions)
+            average_left_shoulder_y = sum(pos[0] for pos in self.shoulder_positions) / len(self.shoulder_positions)
+            average_right_shoulder_y = sum(pos[1] for pos in self.shoulder_positions) / len(self.shoulder_positions)
 
             ###################### Calculate knee angles ######################
             left_knee_angle, right_knee_angle = calculate_knee_angles(results, mp_pose)
 
-            left_knee_angles.append(left_knee_angle)
-            right_knee_angles.append(right_knee_angle)
+            self.left_knee_angles.append(left_knee_angle)
+            self.right_knee_angles.append(right_knee_angle)
 
             # Calculate moving average of knee angles
-            average_left_knee_angle = sum(left_knee_angles) / len(left_knee_angles)
-            average_right_knee_angle = sum(right_knee_angles) / len(right_knee_angles)
+            average_left_knee_angle = sum(self.left_knee_angles) / len(self.left_knee_angles)
+            average_right_knee_angle = sum(self.right_knee_angles) / len(self.right_knee_angles)
 
             left_knee_pixel_x = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_KNEE].x * frame_width)
             left_knee_pixel_y = int(results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_KNEE].y * frame_height)
@@ -236,30 +233,30 @@ class VideoProcessor :
             draw_leg_landmarks(mp, frame, results, color=(0, 255, 0) if knee_angle < KNEE_ANGLE_DEPTH else (0, 0, 255))
 
             # Compare with previous Y positions to determine movement direction
-            if is_standing_up(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y,
+            if is_standing_up_old(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y,
                             left_knee_angle, right_knee_angle, average_left_knee_angle, average_right_knee_angle):
-                direction_text = "UP"
+                self.direction_text = "UP"
                 # Change in direction: going up now
-                if not going_up:
-                    count += 1
-                    going_up = True
+                if not self.going_up:
+                    self.count += 1
+                    self.going_up = True
 
-            elif is_squatting_down(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y,
+            elif is_squatting_down_old(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y,
                                 left_knee_angle, right_knee_angle, average_left_knee_angle, average_right_knee_angle):
-                direction_text = "DOWN"
-                going_up = False
+                self.direction_text = "DOWN"
+                self.going_up = False
 
                 if knee_angle > KNEE_ANGLE_DEPTH:
                     text_to_display = "Go lower!"
                     draw_text(frame, (knee_loc[0], knee_loc[1] + knee_text_height + 20), text_to_display, font_scale=2,
                             color=(0, 0, 255))
             else:
-                direction_text = "STABLE"
+                self.direction_text = "STABLE"
 
             # Display the direction text on the frame
             cycle_x = 0
             cycle_y = 50
-            text_to_display = f"{direction_text} | Cycles: {count}"
+            text_to_display = f"{self.direction_text} | Cycles: {self.count}"
             draw_text(frame, (cycle_x, cycle_y), text_to_display, color=(255, 255, 255))
 
             # knee_info_x = 50
