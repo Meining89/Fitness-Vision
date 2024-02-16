@@ -26,10 +26,10 @@ def draw_leg_landmarks(mp, frame, results, color=(0, 0, 255)):
                                               [(left_hip, left_knee),
                                                (left_knee, left_ankle)],
                                               mp.solutions.drawing_utils.DrawingSpec(color=(245, 117, 66),
-                                                                                     thickness=15,
+                                                                                     thickness=10,
                                                                                      circle_radius=5),
                                               mp.solutions.drawing_utils.DrawingSpec(color=color,
-                                                                                     thickness=15,
+                                                                                     thickness=10,
                                                                                      circle_radius=5)
                                               )
 
@@ -43,9 +43,9 @@ def draw_leg_landmarks(mp, frame, results, color=(0, 0, 255)):
                                               [(right_hip, right_knee),
                                                (right_knee, right_ankle)],
                                               mp.solutions.drawing_utils.DrawingSpec(color=(245, 117, 66),
-                                                                                     thickness=15,
+                                                                                     thickness=10,
                                                                                      circle_radius=5),
                                               mp.solutions.drawing_utils.DrawingSpec(color=color,
-                                                                                     thickness=15,
+                                                                                     thickness=10,
                                                                                      circle_radius=5)
                                               )

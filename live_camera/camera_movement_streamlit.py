@@ -49,6 +49,8 @@ st.markdown("""
         <h3>Instructions</h3>
         <ul>
             <li>To get started, please make sure your entire body is visible in the frame, from shoulders to feet.</li>
+            <li>Please stand 1m to 4m away from the camera.</li>
+            <li>Sufficient lighting is recommended.</li>
             <li>Adjust the baseline settings to tailor the experience to your needs. Use the sliders below to fine-tune the detection to your liking.</li>
             <li>Enjoy exploring the cool features of our app!</li>
         </ul>
@@ -92,7 +94,7 @@ class VideoProcessor :
     def __init__(self):
         #Initilize parameters and variables
         self.sequence_length = 30
-        self.actions = ['Bad Head', 'Bad Back Round', 'Bad Back Warp', 'Bad Lifted Heels', 'Bad Inward Knee', 'Bad Shallow','Good']
+        self.actions = ['Bad Head', 'Bad Back', 'Bad Lifted Heels', 'Bad Inward Knee', 'Bad Shallow','Good']
         self.sequence = deque(maxlen=self.sequence_length)
 
         self.prediction_history = deque(maxlen=5)
@@ -186,10 +188,10 @@ class VideoProcessor :
                                                     results.pose_landmarks,
                                                     mp_pose.POSE_CONNECTIONS,
                                                     mp.solutions.drawing_utils.DrawingSpec(color=(245, 117, 66),
-                                                                                            thickness=15,
+                                                                                            thickness=10,
                                                                                             circle_radius=5),
                                                     mp.solutions.drawing_utils.DrawingSpec(color=(255, 255, 255),
-                                                                                            thickness=15,
+                                                                                            thickness=10,
                                                                                             circle_radius=5)
                                                     )
 
