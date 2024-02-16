@@ -14,34 +14,62 @@ from collections import deque
 import av
 
 st.set_page_config(layout="wide")
+# Add custom CSS for styling
+st.markdown("""
+<style>
+.styled-box {
+    background-color: #fafafa;
+    border-left: 5px solid #4A90E2;
+    padding: 2rem;
+    margin: 1rem 0rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.styled-header {
+    color: #4A90E2;
+    font-weight: 700;
+}
+
+.styled-text {
+    color: #333333;
+    padding-bottom: 0.5rem;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 st.title("Welcome to Fitness Vision!")
 
 st.write("\n")
 
+
 st.markdown("""
-    
-    ### 📌 Instructions
-    
-    To get started, please make sure your entire body is visible in the frame, from shoulders to feet. 
-    It's essential for accurate tracking and analysis of your movements.
-    
-    Adjust the baseline settings to tailor the experience to your needs.
-    Use the sliders below to fine-tune the detection to your liking.
-    
-    Enjoy exploring the cool features of our app !
-""")
+    <div class="styled-box">
+        <h3>Instructions</h3>
+        <ul>
+            <li>To get started, please make sure your entire body is visible in the frame, from shoulders to feet.</li>
+            <li>Adjust the baseline settings to tailor the experience to your needs. Use the sliders below to fine-tune the detection to your liking.</li>
+            <li>Enjoy exploring the cool features of our app!</li>
+        </ul>
+    </div>
+""", unsafe_allow_html=True)
+
 
 st.write("\n")
 
-st.write("### ✨ Personalize Your Settings")
 
+
+st.markdown("### ✨ Personalize Your Settings", unsafe_allow_html=True)
 threshold1 = st.slider("Keypoint Detection Confidence", 0.00, 1.00, 0.50, help="Adjust the sensitivity for mediapipe keypoint detection to ensure accurate pose detection.")
 threshold2 = st.slider("Tracking Confidence", 0.00, 1.00, 0.50, help="Set the stability level for consistent tracking throughout your workout.")
-#threshold3 = st.slider("Error Identification Confidence", 0.00, 1.00, 0.50, help="Control the confidence level for error identification.")
-KNEE_ANGLE_DEPTH = st.slider("Knee Angel for Sufficient Depth", 80, 160, 120, help="Select the perfect knee angle to hit the right depth for your squats.")
+KNEE_ANGLE_DEPTH = st.slider("Knee Angle for Sufficient Depth", 80, 160, 120, help="Select the perfect knee angle to hit the right depth for your squats.")
+
 
 st.write("\n")
-st.write("### Activate the AI 💪🏋️‍♂️")
+
+with st.container():
+    st.write("### 🏋️‍♂️ Activate the AI ")
 
 @st.cache_resource
 def create_model():
