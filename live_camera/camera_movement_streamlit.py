@@ -13,95 +13,52 @@ from keras.layers import (LSTM, Dense, Dropout, Input, Flatten,
 from collections import deque
 import av
 
-## Create and Load the Model
-def attention_block(inputs, time_steps):
-    """
-    Attention layer for deep neural network
+st.set_page_config(layout="wide")
+st.title("Welcome to Fitness Vision!")
 
-    """
-    # Swap dimension to prepare for input for dense layer
-    a = Permute((2, 1))(inputs)
-    # Compute attention weights, use softmax to make sure it sums up to 1
-    a = Dense(time_steps, activation='softmax')(a)
+st.write("\n")
 
-    # Attention vector
-    a_probs = Permute((2, 1), name='attention_vec')(a)
+st.markdown("""
+    
+    ### 📌 Instructions
+    
+    To get started, please make sure your entire body is visible in the frame, from shoulders to feet. 
+    It's essential for accurate tracking and analysis of your movements.
+    
+    Adjust the baseline settings to tailor the experience to your needs.
+    Use the sliders below to fine-tune the detection to your liking.
+    
+    Enjoy exploring the cool features of our app !
+""")
 
-    # Luong's multiplicative score
-    # Performs an element-wise multiplication between the input sequence (inputs) and the attention vector (a_probs).
-    # This multiplication emphasizes the elements of the input sequence that have higher attention weights.
-    output_attention_mul = multiply([inputs, a_probs], name='attention_mul')
+st.write("\n")
 
-    return output_attention_mul
+st.write("### ✨ Personalize Your Settings")
 
+threshold1 = st.slider("Keypoint Detection Confidence", 0.00, 1.00, 0.50, help="Adjust the sensitivity for mediapipe keypoint detection to ensure accurate pose detection.")
+threshold2 = st.slider("Tracking Confidence", 0.00, 1.00, 0.50, help="Set the stability level for consistent tracking throughout your workout.")
+#threshold3 = st.slider("Error Identification Confidence", 0.00, 1.00, 0.50, help="Control the confidence level for error identification.")
+KNEE_ANGLE_DEPTH = st.slider("Knee Angel for Sufficient Depth", 80, 160, 120, help="Select the perfect knee angle to hit the right depth for your squats.")
+
+st.write("\n")
+st.write("### Activate the AI 💪🏋️‍♂️")
+
+@st.cache_resource
 def create_model():
-    """
-    create and load LSTM Model with attention mechinism
-
-    """
-
-    HIDDEN_UNITS = 256
-    sequence_length = 30
-    num_landmarks = 33
-    num_values = 4
-    num_input_values = num_landmarks*num_values
-    num_classes = 7
-
-    # Input
-    inputs = Input(shape=(sequence_length, num_input_values))
-
-    # Bi-LSTM
-    lstm_out = Bidirectional(LSTM(HIDDEN_UNITS, return_sequences=True))(inputs)
-
-    # Attention Block
-    attention_mul = attention_block(lstm_out, sequence_length)
-    attention_mul = Flatten()(attention_mul)
-
-    # Fully Connected Layer
-    # Common Practice to double number of hidden units in the fully connected layer compared to the LSTM layer.
-    x = Dense(2*HIDDEN_UNITS, activation='relu')(attention_mul)
-    #Dropput Layer to avoid overfitting. 50% of the units in the fully connected layer are dropped out during training.
-    x = Dropout(0.5)(x)
-
-    # Output Layer
-    x = Dense(num_classes, activation='softmax')(x)
-
-    # Bring it all together
-    # AttnLSTM = Model(inputs=[inputs], outputs=x)
-
-    folder = 'models/LSTM_model_0.0005'
+   
+    folder = 'models/back_combined_with_shallow'
 
     AttnLSTM = load_model(folder)
     print(AttnLSTM.summary())
     
     return AttnLSTM
 
-## Stream Webcam Video and Run Model
 # Create LSTM model
 AttnLSTM = create_model()
+
 # Initialize MediaPipe Pose
 mp_pose = mp.solutions.pose
-pose = mp_pose.Pose()
-
-## App
-st.set_page_config(layout="wide")
-st.write("# AI Personal Fitness Trainer Web App")
-
-st.markdown("❗❗ **Development Note** ❗❗")
-st.markdown("Currently, the exercise recognition model uses the the x, y, and z coordinates of each anatomical landmark from the MediaPipe Pose model. These coordinates are normalized with respect to the image frame (e.g., the top left corner represents (x=0,y=0) and the bottom right corner represents(x=1,y=1)).")
-st.markdown("I'm currently developing and testing two new feature engineering strategies:")
-st.markdown("- Normalizing coordinates by the detected bounding box of the user")
-st.markdown("- Using joint angles rather than keypoint coordaintes as features")            
-st.write("Stay Tuned!")
-
-st.write("## Settings")
-threshold1 = st.slider("Minimum Keypoint Detection Confidence", 0.00, 1.00, 0.50)
-threshold2 = st.slider("Minimum Tracking Confidence", 0.00, 1.00, 0.50)
-threshold3 = st.slider("Minimum Activity Classification Confidence", 0.00, 1.00, 0.50)
-
-KNEE_ANGLE_DEPTH = st.slider("Knee Angle for Sufficient Depth", 80, 160, 120)
-
-st.write("## Activate the AI 💪🏋️‍♂️")
+pose = mp_pose.Pose(min_detection_confidence=threshold1, min_tracking_confidence=threshold2) # mediapipe pose model
 
 class VideoProcessor :
     def __init__(self):
@@ -171,7 +128,6 @@ class VideoProcessor :
 
         if len(self.sequence) == self.sequence_length:
             res = model.predict(np.expand_dims(list(self.sequence), axis=0), verbose=0)[0]
-            print('start predicting...')
             # self.current_action = self.actions[np.argmax(res)]
             self.prediction_history.append(res)
 
