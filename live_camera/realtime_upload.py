@@ -13,7 +13,7 @@ from keras.layers import (LSTM, Dense, Dropout, Input, Flatten,
 from collections import deque
 import av
 import pandas as pd
-class_labels = ['Bad_head', 'Bad_back', 'Bad_lifted_heels', 'Bad_inward_knee', 'Bad_shallow','Good']
+class_labels = ['Bad Head', 'Bad Back', 'Bad Lifted Heels', 'Bad Inward Knee', 'Bad Shallow','Good']
 
 st.set_page_config(layout="wide")
 # Add custom CSS for styling
@@ -79,7 +79,7 @@ KNEE_ANGLE_DEPTH = st.slider("Knee Angle for Sufficient Depth", 80, 160, 120, he
 @st.cache_resource
 def create_model():
    
-    folder = 'models/back_combined_with_shallow'
+    folder = 'models/right_original_back_combined_0.001'
 
     AttnLSTM = load_model(folder)
     print(AttnLSTM.summary())
@@ -262,7 +262,7 @@ class VideoProcessor :
             self.prediction_history.append(res)
 
             if len(self.prediction_history) == self.prediction_history.maxlen:
-                moving_average = np.mean(self.prediction_history, axis=0)
+                moving_average = np.mean(np.array(self.prediction_history), axis=0)
                 self.current_action = self.actions[np.argmax(moving_average)]
 
             # Viz probabilities
