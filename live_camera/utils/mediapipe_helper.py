@@ -20,6 +20,19 @@ def extract_keypoints(results):
                      results.pose_landmarks.landmark]).flatten() if results.pose_landmarks else np.zeros(33 * 4)
     return pose
 
+
+def extract_keypoints_no_arm(results):
+    # Extract keypoints and convert to np array
+    if results.pose_landmarks:
+        pose = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark])
+        # Remove landmarks 13-22 (indices 12 to 22, inclusive)
+        # Since landmarks are 0-indexed, landmark 13 starts at index 12*4=48 and landmark 22 ends at index 22*4=88
+        pose = np.concatenate((pose[:13], pose[23:]), axis=0)
+    else:
+        pose = np.zeros((33 - 10) * 4)  # Adjusted for the removal of 10 landmarks
+    
+    return pose.flatten()
+
 def feature_extraction_data(mp_pose, frame_list, width=1920, height=1080):
   with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
     #initialize lists to store frame features and images.
