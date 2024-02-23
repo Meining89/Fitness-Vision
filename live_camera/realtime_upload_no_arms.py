@@ -13,7 +13,7 @@ from keras.layers import (LSTM, Dense, Dropout, Input, Flatten,
 from collections import deque
 import av
 import pandas as pd
-class_labels = ['Bad_head', 'Bad_back', 'Bad_lifted_heels', 'Bad_inward_knee', 'Bad_shallow','Good']
+class_labels = ['Bad Head', 'Bad Back', 'Bad Frontal Knees', 'Bad Inward Knee', 'Bad Shallow','Good']
 
 st.set_page_config(layout="wide")
 # Add custom CSS for styling
@@ -79,7 +79,7 @@ KNEE_ANGLE_DEPTH = st.slider("Knee Angle for Sufficient Depth", 80, 160, 120, he
 @st.cache_resource
 def create_model():
    
-    folder = 'models/No_arm'
+    folder = 'models/no_arm_our_0.001'
 
     AttnLSTM = load_model(folder)
     print(AttnLSTM.summary())
@@ -194,7 +194,7 @@ class VideoProcessor :
     def __init__(self):
         #Initilize parameters and variables
         self.sequence_length = 30
-        self.actions = ['Bad Head', 'Bad Back', 'Bad Lifted Heels', 'Bad Inward Knee', 'Bad Shallow','Good']
+        self.actions = ['Bad Head', 'Bad Back', 'Bad Frontal Knee', 'Bad Inward Knee', 'Bad Shallow','Good']
         self.sequence = deque(maxlen=self.sequence_length)
 
         self.prediction_history = deque(maxlen=5)
@@ -339,7 +339,7 @@ class VideoProcessor :
 
                 if knee_angle > KNEE_ANGLE_DEPTH:
                     text_to_display = "Go lower!"
-                    draw_text(frame, (knee_loc[0], knee_loc[1] + knee_text_height + 20), text_to_display, font_scale=2,
+                    draw_text(frame, (knee_loc[0], knee_loc[1] + knee_text_height + 40), text_to_display, font_scale=2,
                             color=(0, 0, 255))
             else:
                 self.direction_text = "STABLE"
