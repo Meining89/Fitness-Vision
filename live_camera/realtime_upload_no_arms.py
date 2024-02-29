@@ -74,7 +74,9 @@ st.markdown("### ✨ Personalize Your Settings", unsafe_allow_html=True)
 threshold1 = st.slider("Keypoint Detection Confidence", 0.00, 1.00, 0.50, help="Adjust the sensitivity for mediapipe keypoint detection to ensure accurate pose detection.")
 threshold2 = st.slider("Tracking Confidence", 0.00, 1.00, 0.50, help="Set the stability level for consistent tracking throughout your workout.")
 KNEE_ANGLE_DEPTH = st.slider("Knee Angle for Sufficient Depth", 80, 160, 120, help="Select the perfect knee angle to hit the right depth for your squats.")
-
+professional_mode = st.toggle("Enable Professional Mode", value=False, help="Toggle this switch to Professional Mode, where a squat is counted only if the knee angle <= threshold.")
+if professional_mode:
+    st.markdown("Professional Mode is enabled: a squat is counted only if the knee angle is less than or equal to the threshold. Live camera analysis only.")
 
 @st.cache_resource
 def create_model():
@@ -215,6 +217,7 @@ class VideoProcessor :
         # Initalize counter
         self.count = 0
         self.going_up = False
+        self.increment = False
 
         self.direction_text = "STABLE"
 
@@ -321,21 +324,29 @@ class VideoProcessor :
             knee_angle = min(left_knee_angle, right_knee_angle)
 
             # Draw the left leg in red if the knee angle is greater than the threshold
-            draw_leg_landmarks(mp, frame, results, color=(0, 255, 0) if knee_angle < KNEE_ANGLE_DEPTH else (0, 0, 255))
+            draw_leg_landmarks(mp, frame, results, color=(0, 255, 0) if knee_angle <= KNEE_ANGLE_DEPTH else (0, 0, 255))
 
             # Compare with previous Y positions to determine movement direction
             if is_standing_up_old(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y,
                             left_knee_angle, right_knee_angle, average_left_knee_angle, average_right_knee_angle):
                 self.direction_text = "UP"
                 # Change in direction: going up now
-                if not self.going_up:
+                if not self.going_up and self.increment:
                     self.count += 1
                     self.going_up = True
-
+                    self.increment = False
             elif is_squatting_down_old(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y,
                                 left_knee_angle, right_knee_angle, average_left_knee_angle, average_right_knee_angle):
                 self.direction_text = "DOWN"
                 self.going_up = False
+
+                # Professional mode: only count if knee angle is less than or equal to threshold
+                if professional_mode:
+                    if knee_angle <= KNEE_ANGLE_DEPTH:
+                        self.increment = True
+                else:
+                    # Non-professional mode: count every time the user stands up
+                    self.increment = True
 
                 if knee_angle > KNEE_ANGLE_DEPTH:
                     text_to_display = "Go lower!"
