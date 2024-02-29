@@ -134,10 +134,10 @@ def knee_straightening(left_knee_angle, right_knee_angle, left_average, right_av
 
 
 # OLDER CODE
-def is_squatting_down_old(left_shoulder, right_shoulder, average_left_shoulder, average_right_shoulder, left_knee_angle, right_knee_angle, left_knee_average, right_knee_average):
+def is_squatting_down_old(left_shoulder, right_shoulder, average_left_shoulder, average_right_shoulder, left_knee_angle, right_knee_angle, left_knee_average, right_knee_average, threshold=170):
 
     if is_shoulder_downwards(left_shoulder, right_shoulder, average_left_shoulder, average_right_shoulder) \
-            and knee_bending(left_knee_angle, right_knee_angle, left_knee_average, right_knee_average):
+            and knee_bending(left_knee_angle, right_knee_angle, left_knee_average, right_knee_average, threshold):
         return True
 
     return False
