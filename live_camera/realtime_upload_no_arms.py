@@ -58,7 +58,7 @@ st.markdown("""
         <h3>Instructions</h3>
         <ul>
             <li>To get started, please make sure your entire body is visible in the frame, from shoulders to feet.</li>
-            <li>Please stand 1m to 4m away from the camera.</li>
+            <li>Please stand 1m to 4m away from the camera and 45 degrees to the camera.</li>
             <li>Sufficient lighting is recommended.</li>
             <li>Adjust the baseline settings to tailor the experience to your needs. Use the sliders below to fine-tune the detection to your liking.</li>
             <li>Enjoy exploring the cool features of our app!</li>
@@ -73,10 +73,10 @@ st.markdown("---")
 st.markdown("### ✨ Personalize Your Settings", unsafe_allow_html=True)
 threshold1 = st.slider("Keypoint Detection Confidence", 0.00, 1.00, 0.50, help="Adjust the sensitivity for mediapipe keypoint detection to ensure accurate pose detection.")
 threshold2 = st.slider("Tracking Confidence", 0.00, 1.00, 0.50, help="Set the stability level for consistent tracking throughout your workout.")
-KNEE_ANGLE_DEPTH = st.slider("Knee Angle for Sufficient Depth", 80, 160, 120, help="Select the perfect knee angle to hit the right depth for your squats.")
-professional_mode = st.toggle("Enable Professional Mode", value=False, help="Toggle this switch to Professional Mode, where a squat is counted only if the knee angle <= threshold.")
+KNEE_ANGLE_DEPTH = st.slider("Knee Angle for Sufficient Depth", 70, 90, 110, help="Select the perfect knee angle to hit the right depth for your squats.")
+professional_mode = st.toggle("Enable Depth - Professional Mode", value=False, help="Toggle this switch to Depth - Professional Mode, where a squat is counted only if the knee angle <= threshold.")
 if professional_mode:
-    st.markdown("Professional Mode is enabled: a squat is counted only if the knee angle is less than or equal to the threshold. Live camera analysis only.")
+    st.markdown("Depth - Professional Mode is enabled: a squat is counted only if the knee angle is less than or equal to the threshold. Live camera analysis only.")
 
 @st.cache_resource
 def create_model():
