@@ -73,7 +73,7 @@ st.markdown("---")
 st.markdown("### ✨ Personalize Your Settings", unsafe_allow_html=True)
 threshold1 = st.slider("Keypoint Detection Confidence", 0.00, 1.00, 0.50, help="Adjust the sensitivity for mediapipe keypoint detection to ensure accurate pose detection.")
 threshold2 = st.slider("Tracking Confidence", 0.00, 1.00, 0.50, help="Set the stability level for consistent tracking throughout your workout.")
-KNEE_ANGLE_DEPTH = st.slider("Knee Angle for Sufficient Depth", 70, 110, 90, help="Select the perfect knee angle to hit the right depth for your squats.")
+KNEE_ANGLE_DEPTH = st.slider("Knee Angle for Sufficient Depth", 75, 115, 95, help="Select the perfect knee angle to hit the right depth for your squats.")
 professional_mode = st.toggle("Enable Depth - Professional Mode", value=False, help="Toggle this switch to Depth - Professional Mode, where a squat is counted only if the knee angle <= threshold.")
 if professional_mode:
     st.markdown("Depth - Professional Mode is enabled: a squat is counted only if the knee angle is less than or equal to the threshold. Live camera analysis only.")
