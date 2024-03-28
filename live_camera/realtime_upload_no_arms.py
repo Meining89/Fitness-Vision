@@ -163,8 +163,18 @@ def display_predictions(prediction_dict):
     # Format the probabilities to be more readable (e.g., as percentages)
     predictions_df['Probability'] = predictions_df['Probability'].apply(lambda x: f"{x*100:.2f}%")
     
-    # Convert DataFrame to HTML, hide the index
-    predictions_html = predictions_df.to_html(index=False)
+    first_row_class = predictions_df.iloc[0]['Class']
+    if first_row_class == 'Good':
+        highlight_color = "#90ee90"  # Light green
+    else:
+        highlight_color = "#ffcccb"  # Light red
+    
+    # Convert DataFrame to HTML, hide the index, and highlight the first row based on the class
+    predictions_html = predictions_df.to_html(index=False, escape=False)
+    if predictions_html:
+        # Add style for highlighting the first row based on the class
+        predictions_html = predictions_html.replace('<tr>', f'<tr style="background-color: {highlight_color}">', 1)
+    
     
     # Display the HTML using Streamlit, without the index
     st.write("#### Prediction Results:")
