@@ -215,9 +215,10 @@ class VideoProcessor :
             (117, 245, 16),  # Lime Green
             (16, 117, 245),  # Royal Blue
             (255, 0, 0),     # Red
+            (0, 255, 0),     # Green
             (0, 0, 255),     # Blue
-            (255, 255, 0),    # Yellow
-            (0, 255, 0)  # Green
+            (255, 255, 0)    # Yellow
+
         ]
         # Initialize shoulder Y positions
         self.shoulder_positions = deque(maxlen=NUM_FRAMES_SHOULDER)
@@ -368,7 +369,7 @@ class VideoProcessor :
             # Display the direction text on the frame
             cycle_x = 0
             cycle_y = 50
-            text_to_display = f"{self.direction_text} | Cycles: {self.count}"
+            text_to_display = f"{self.direction_text} | Count: {self.count}"
             draw_text(frame, (cycle_x, cycle_y), text_to_display, color=(255, 255, 255))
 
             # knee_info_x = 50
