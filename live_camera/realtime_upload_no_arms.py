@@ -208,6 +208,9 @@ class VideoProcessor :
         self.sequence_length = 30
         self.actions = ['Bad Head', 'Bad Back', 'Bad Frontal Knee', 'Bad Inward Knee', 'Bad Shallow','Good']
         self.sequence = deque(maxlen=self.sequence_length)
+        self.sequence_saved = False
+        self.frame_count = 0
+        self.frame_sequence = []
 
         self.prediction_history = deque(maxlen=5)
         self.colors = [
@@ -269,8 +272,15 @@ class VideoProcessor :
         keypoints = extract_keypoints_no_arm(results)
         moving_average = np.zeros(len(self.actions))
         self.sequence.append(keypoints.astype('float32', casting='same_kind'))
+        
 
         if len(self.sequence) == self.sequence_length:
+            
+            if not self.sequence_saved:
+                # Save sequence when its length reaches 30
+                np.save('meidapipe_sequence.npy', np.array(self.sequence))
+                self.sequence_saved = True
+
             res = model.predict(np.expand_dims(list(self.sequence), axis=0), verbose=0)[0]
             # self.current_action = self.actions[np.argmax(res)]
             self.prediction_history.append(res)
@@ -292,11 +302,25 @@ class VideoProcessor :
         # Convert the BGR image to RGB
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
+
+
         # Process the frame with MediaPipe Pose
         results = pose.process(rgb_frame)
 
         # Draw landmarks on the frame
         if results.pose_landmarks:
+
+
+            # Save only the first 30 frames to numpy files
+            if self.frame_count <= 30:
+                # keypoints = extract_keypoints_no_arm(results)
+                self.frame_sequence.append(rgb_frame)
+
+                if self.frame_count == 30:
+                    np.save('frame_sequence.npy', np.array(self.frame_sequence))
+
+            self.frame_count += 1
+
 
             mp.solutions.drawing_utils.draw_landmarks(frame,
                                                     results.pose_landmarks,
