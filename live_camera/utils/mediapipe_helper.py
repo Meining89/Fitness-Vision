@@ -21,7 +21,7 @@ def extract_keypoints(results):
     return pose
 
 
-def extract_keypoints_no_arm(results):
+def extract_keypoints_no_arm(results, run_check):
     # Extract keypoints and convert to np array
     if results.pose_landmarks:
         pose = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark])

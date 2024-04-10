@@ -218,8 +218,8 @@ class VideoProcessor :
             (117, 245, 16),  # Lime Green
             (16, 117, 245),  # Royal Blue
             (255, 0, 0),     # Red
-            (0, 255, 0),     # Green
             (0, 0, 255),     # Blue
+            (0, 255, 0),  # Green
             (255, 255, 0)    # Yellow
 
         ]
@@ -234,6 +234,7 @@ class VideoProcessor :
         self.increment = False
 
         self.direction_text = "STABLE"
+        self.check=True
 
     def prob_viz(self, res, input_frame):
         """
@@ -269,7 +270,9 @@ class VideoProcessor :
         """
 
         # Prediction logic
-        keypoints = extract_keypoints_no_arm(results)
+        keypoints = extract_keypoints_no_arm(results, self.check)
+        if self.check:
+            self.check = False
         moving_average = np.zeros(len(self.actions))
         self.sequence.append(keypoints.astype('float32', casting='same_kind'))
         
@@ -310,6 +313,13 @@ class VideoProcessor :
         # Draw landmarks on the frame
         if results.pose_landmarks:
 
+            if self.check:
+                for landmark in mp.solutions.pose.PoseLandmark:
+                    print(landmark.name, landmark.value)
+
+                print("---------------------------------")
+                self.check = False
+
 
             # Save only the first 30 frames to numpy files
             if self.frame_count <= 30:
@@ -321,17 +331,33 @@ class VideoProcessor :
 
             self.frame_count += 1
 
+            test_landmark = []
 
-            mp.solutions.drawing_utils.draw_landmarks(frame,
-                                                    results.pose_landmarks,
-                                                    mp_pose.POSE_CONNECTIONS,
-                                                    mp.solutions.drawing_utils.DrawingSpec(color=(245, 117, 66),
-                                                                                            thickness=10,
-                                                                                            circle_radius=5),
-                                                    mp.solutions.drawing_utils.DrawingSpec(color=(255, 255, 255),
-                                                                                            thickness=10,
-                                                                                            circle_radius=5)
-                                                    )
+            # for landmark in mp.solutions.pose.PoseLandmark:
+            #     if 13 <= landmark.value <= 22:
+            #         continue
+            #     test_landmark.append(landmark)
+
+            for idx in range(33):
+                if 13 <= idx <= 22:
+                    continue
+                landmark = results.pose_landmarks.landmark[idx]
+                x = int(landmark.x * frame_width)
+                y = int(landmark.y * frame_height)
+
+                cv2.circle(frame, (x, y), 10, (0, 255, 0), -1)
+
+            # mp.solutions.drawing_utils.draw_landmarks(frame,
+            #                                         # results.pose_landmarks,
+            #                                           test_landmark,
+            #                                         mp_pose.POSE_CONNECTIONS,
+            #                                         mp.solutions.drawing_utils.DrawingSpec(color=(245, 117, 66),
+            #                                                                                 thickness=10,
+            #                                                                                 circle_radius=5),
+            #                                         mp.solutions.drawing_utils.DrawingSpec(color=(255, 255, 255),
+            #                                                                                 thickness=10,
+            #                                                                                 circle_radius=5)
+            #                                         )
 
             # Get Y positions of the left and right shoulders
             left_shoulder_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER].y
@@ -359,7 +385,7 @@ class VideoProcessor :
             knee_angle = min(left_knee_angle, right_knee_angle)
 
             # Draw the left leg in red if the knee angle is greater than the threshold
-            draw_leg_landmarks(mp, frame, results, color=(0, 255, 0) if knee_angle <= KNEE_ANGLE_DEPTH else (0, 0, 255))
+            # draw_leg_landmarks(mp, frame, results, color=(0, 255, 0) if knee_angle <= KNEE_ANGLE_DEPTH else (0, 0, 255))
 
             # Compare with previous Y positions to determine movement direction
             if is_standing_up_old(left_shoulder_y, right_shoulder_y, average_left_shoulder_y, average_right_shoulder_y,
