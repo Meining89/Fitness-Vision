@@ -213,10 +213,10 @@ class VideoProcessor :
         self.colors = [
             (245, 117, 16),  # Orange
             (117, 245, 16),  # Lime Green
+            (255, 0, 0),  # Red
             (16, 117, 245),  # Royal Blue
-            (255, 0, 0),     # Red
-            (0, 255, 0),  # Green
             (0, 0, 255),     # Blue
+            (0, 255, 0),  # Green
             (255, 255, 0)    # Yellow
 
         ]
