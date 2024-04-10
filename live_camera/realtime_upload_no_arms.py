@@ -81,7 +81,7 @@ if professional_mode:
 @st.cache_resource
 def create_model():
    
-    folder = 'models/no_arm_our_0.001'
+    folder = 'models/no_arm_own_data_45_degree_0.001'
 
     AttnLSTM = load_model(folder)
     print(AttnLSTM.summary())
@@ -215,7 +215,7 @@ class VideoProcessor :
             (117, 245, 16),  # Lime Green
             (16, 117, 245),  # Royal Blue
             (255, 0, 0),     # Red
-            (0, 255, 0),     # Green
+            (0, 255, 0),  # Green
             (0, 0, 255),     # Blue
             (255, 255, 0)    # Yellow
 
