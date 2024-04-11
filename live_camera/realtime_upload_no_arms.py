@@ -63,6 +63,16 @@ st.markdown("""
             <li>Adjust the baseline settings to tailor the experience to your needs. Use the sliders below to fine-tune the detection to your liking.</li>
             <li>Enjoy exploring the cool features of our app!</li>
         </ul>
+        <h3>How to do a proper squat?</h3>
+        <ul>
+            <li>Feet should be shoulder-width apart with toes pointing slightly outwards. </li>
+            <li>Weight should be evenly distributed across the entire foot.</li>
+            <li>Push hips back as if you are sitting into an imaginary chair.</li>
+            <li>Your hips should go parallel to or below the top of your knees depending on your mobility and comfort</li>
+            <li>Your knees should not go past your toes.</li>
+            <li>Your core muscles should be actively engaged.</li>
+            <li>Keep your chest up and back straight throughout the movement.</li>
+        </ul>
     </div>
 """, unsafe_allow_html=True)
 
